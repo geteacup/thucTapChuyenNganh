@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h2>Danh sách sản phẩm</h2>
+<div id="product-list">
+
+</div>
+
+<script>
+    async function loadProducts() {
+
+try{
+        var res = await fetch("/identity/tonkho", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await res.json();
+
+        const container = document.getElementById('product-list');
+
+
+        data.result.forEach(sp => {
+            const product = document.createElement('div');
+            product.className = 'product';
+            product.innerHTML = `
+      <img   src="/identity/images/${sp.anhSP}" width="400" alt="${sp.anhSP}"/>
+      <h3>${sp.tenSP}</h3>
+      <p><strong>Mã:</strong> ${sp.maSP}</p>
+      <p><strong>Giá:</strong> ${Number(sp.giaSP).toLocaleString()} VNĐ</p>
+      <p><strong>Kích thước:</strong> ${sp.daiSP}m x ${sp.rongSP}m</p>
+      <p><strong>Số lượng:</strong> ${sp.soLuongSP.toLocaleString()}</p>
+    `;
+            container.appendChild(product);
+        });
+    }
+    catch (err) {
+        const product = document.createElement('div');
+        product.className = 'product';
+        product.innerHTML = 'khong load duoc';
+        const container = document.getElementById('product-list');
+        container.appendChild(product);
+    }
+    }
+loadProducts();
+</script>
+
+</body>
+</html>
