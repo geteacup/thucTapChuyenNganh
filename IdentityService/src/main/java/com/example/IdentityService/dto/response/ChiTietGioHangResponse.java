@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ChiTietGioHangResponse {
-    private UserResponse userResponse;
-    private TonKhoResponse tonKhoResponse;
+    private UserResponse user;
+    private TonKhoResponse tonKho;
     private int soLuong;
 }

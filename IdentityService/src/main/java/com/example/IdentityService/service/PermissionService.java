@@ -28,6 +28,13 @@ public class PermissionService {
         this.permissionRepository = permissionRepository;
     }
 
+    public PermissionResponse updatePermission(String permissionID, PermissionRequest permissionRequest) {
+        Permission permission = permissionRepository.findById(permissionID)
+                .orElseThrow(()-> new RuntimeException("sometime"));
+        permissionMapper.updatePermission(permission, permissionRequest);
+        permissionRepository.save(permission);
+        return permissionMapper.toPermissionResponse(permission);
+    }
     public PermissionResponse create(PermissionRequest request) {
         Permission permission = permissionMapper.toPermission(request);
         permission = permissionRepository.save(permission);

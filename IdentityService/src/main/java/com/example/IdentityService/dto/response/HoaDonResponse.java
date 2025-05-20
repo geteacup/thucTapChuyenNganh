@@ -16,8 +16,8 @@ import java.time.LocalDate;
 @Builder
 public class HoaDonResponse {
     String maHD;
-    UserResponse userKHResponse;
-    UserResponse userNVResponse;
+    UserResponse userKH;
+    UserResponse userNV;
     String status;
     LocalDate ngayTao;
 }

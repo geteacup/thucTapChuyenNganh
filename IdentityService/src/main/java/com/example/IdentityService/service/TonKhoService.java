@@ -47,6 +47,24 @@ public class TonKhoService {
         tonKhoList.stream().map(tonKho -> tonKhoMapper.toTonKhoResponse(tonKho)).toList();
         return tonKhoResponseList;
     }
+    public List<TonKhoResponse> getAllTonKhoByLoaiSanPham(String maLoai) {
+        LoaiSanPham loaiSanPham = loaiSanPhamRepository.findById(maLoai)
+                .orElseThrow(()->new RuntimeException("somethingworng"));
+        List<TonKho> tonKhoList = tonKhoRepository.findAllByLoaiSanPham(loaiSanPham);
+        return tonKhoList.stream().map(tonKhoMapper::toTonKhoResponse).toList();
+    }
+    public List<TonKhoResponse> getAllTonKhoByNhaCungCap(String maNCC) {
+        NhaCungCap nhaCungCap = nhaCungCapRepository.findById(maNCC)
+                .orElseThrow(()->new RuntimeException("somethingworng"));
+        List<TonKho> tonKhoList = tonKhoRepository.findAllByNhaCungCap(nhaCungCap);
+        return tonKhoList.stream().map(tonKhoMapper::toTonKhoResponse).toList();
+    }
+    public TonKhoResponse getTonKhoById(String maSP){
+        TonKho tonKho = tonKhoRepository.findById(maSP)
+                .orElseThrow(()-> new RuntimeException("SomethingWorng"));
+        TonKhoResponse tonKhoResponse = tonKhoMapper.toTonKhoResponse(tonKho);
+        return tonKhoResponse;
+    }
     public TonKhoResponse createTonKho(TonKhoRequest tonKhoRequest) {
         TonKho tonKho = new TonKho();
         tonKho =  tonKhoMapper.toTonKho(tonKhoRequest);
@@ -68,7 +86,7 @@ public class TonKhoService {
     }
     public TonKhoResponse updateTonKho(String maSP, TonKhoRequest tonKhoRequest) {
         TonKho tonKho = tonKhoRepository.findById(maSP).orElseThrow(() -> new RuntimeException("not Found"));
-        tonKho = tonKhoMapper.toTonKho(tonKhoRequest);
+        tonKhoMapper.updateTonKho(tonKhoRequest,tonKho);
         if(tonKhoRequest.getLoaiSanPham()!=null) {
             LoaiSanPham loaiSanPham = loaiSanPhamRepository.findById(tonKhoRequest.getLoaiSanPham())
                     .orElseThrow(() -> new RuntimeException("Không tìm thấy loại sản phẩm với ID: " + tonKhoRequest.getLoaiSanPham()));
@@ -81,5 +99,10 @@ public class TonKhoService {
         }
         tonKhoRepository.save(tonKho);
         return tonKhoMapper.toTonKhoResponse(tonKho);
+    }
+    public void plusTonKho(String maSP, int soLuong){
+        TonKho tonKho = tonKhoRepository.findById(maSP).orElseThrow(() -> new RuntimeException("not Found"));
+        tonKho.setSoLuongSP(tonKho.getSoLuongSP()+soLuong);
+        tonKhoRepository.save(tonKho);
     }
 }

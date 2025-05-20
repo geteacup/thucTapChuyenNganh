@@ -1,0 +1,148 @@
+<!-- Supplier Section -->
+<div id="suppliers" class="section d-none">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Quản lý nhà cung cấp</h2>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#supplierModal">
+            <i class="fas fa-plus me-2"></i>Thêm nhà cung cấp
+        </button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Mã NCC</th>
+                            <th>Tên nhà cung cấp</th>
+                            <th>Mô tả</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="supplierTable">
+                        <!-- Supplier data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Supplier Modal -->
+<div class="modal fade" id="supplierModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm/Sửa nhà cung cấp</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="supplierForm">
+                    <input type="hidden" id="supplierId">
+                    <div class="mb-3">
+                        <label for="supplierName" class="form-label">Tên nhà cung cấp</label>
+                        <input type="text" class="form-control" id="supplierName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="supplierDescription" class="form-label">Mô tả</label>
+                        <textarea class="form-control" id="supplierDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" id="saveSupplierBtn">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Supplier CRUD
+async function loadSuppliers() {
+    try {
+        const response = await axios.get('/nhacungcap');
+        const suppliers = response.data.result;
+        console.log('Suppliers:', suppliers); // Debug log
+        const tbody = document.getElementById('supplierTable');
+        tbody.innerHTML = suppliers.map(supplier => `
+            <tr>
+                <td>${supplier.maNCC || ''}</td>
+                <td>${supplier.tenNCC || ''}</td>
+                <td>${supplier.motaNCC || ''}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary me-2" onclick="editSupplier('${supplier.maNCC}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteSupplier('${supplier.maNCC}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (error) {
+        console.error('Error loading suppliers:', error);
+        alert('Có lỗi xảy ra khi tải danh sách nhà cung cấp');
+    }
+}
+
+async function saveSupplier() {
+    const id = document.getElementById('supplierId').value;
+    const data = {
+        maNCC: id,
+        tenNCC: document.getElementById('supplierName').value,
+        motaNCC: document.getElementById('supplierDescription').value
+    };
+    
+    try {
+        if (id) {
+            await axios.put(`/nhacungcap/${id}`, data);
+        } else {
+            await axios.post('/nhacungcap', data);
+        }
+        bootstrap.Modal.getInstance(document.getElementById('supplierModal')).hide();
+        loadSuppliers();
+    } catch (error) {
+        console.error('Error saving supplier:', error);
+        alert('Có lỗi xảy ra khi lưu nhà cung cấp');
+    }
+}
+
+async function editSupplier(id) {
+    try {
+        const response = await axios.get(`/nhacungcap/${id}`);
+        const supplier = response.data.result;
+        console.log('Supplier detail:', supplier); // Debug log
+        document.getElementById('supplierId').value = supplier.maNCC;
+        document.getElementById('supplierName').value = supplier.tenNCC;
+        document.getElementById('supplierDescription').value = supplier.motaNCC;
+        new bootstrap.Modal(document.getElementById('supplierModal')).show();
+    } catch (error) {
+        console.error('Error loading supplier:', error);
+        alert('Có lỗi xảy ra khi tải thông tin nhà cung cấp');
+    }
+}
+
+async function deleteSupplier(id) {
+    if (confirm('Bạn có chắc muốn xóa nhà cung cấp này?')) {
+        try {
+            await axios.delete(`/nhacungcap/${id}`);
+            loadSuppliers();
+        } catch (error) {
+            console.error('Error deleting supplier:', error);
+            alert('Có lỗi xảy ra khi xóa nhà cung cấp');
+        }
+    }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    // Add event listener for save button
+    document.getElementById('saveSupplierBtn').addEventListener('click', saveSupplier);
+    
+    // Add modal reset handler
+    document.getElementById('supplierModal').addEventListener('hidden.bs.modal', function () {
+        this.querySelector('form').reset();
+        document.getElementById('supplierId').value = '';
+    });
+});
+</script> 

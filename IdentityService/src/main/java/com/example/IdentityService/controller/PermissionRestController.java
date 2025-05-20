@@ -29,7 +29,12 @@ public class PermissionRestController {
                 .result(permissionRequest)
                 .build();
     }
-
+    @PutMapping("/{permissionId}")
+    ApiResponse<PermissionResponse> update(@PathVariable("permissionId") String permissionId, @RequestBody PermissionRequest permissionRequest) {
+        return ApiResponse.<PermissionResponse>builder()
+                .result(permissionService.updatePermission(permissionId, permissionRequest))
+                .build();
+    }
     @GetMapping()
     ApiResponse<List<PermissionResponse>> getAll() {
         return ApiResponse.<List<PermissionResponse>>builder()

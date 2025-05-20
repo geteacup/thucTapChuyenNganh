@@ -12,4 +12,5 @@ import java.util.Optional;
 @Repository
 public interface ChiTietGioHangRepository extends JpaRepository<ChiTietGioHang, ChiTietGioHangId> {
     List<ChiTietGioHang> findAllByUser(User user);
+    void deleteAllByUser(User user);
 }

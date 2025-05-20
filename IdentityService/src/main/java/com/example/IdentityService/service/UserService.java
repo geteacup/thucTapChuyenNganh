@@ -97,7 +97,7 @@ public class UserService {
     }
 
     //    @PreAuthorize("hasRole('ADMIN')")
-    @PreAuthorize("hasAuthority('READ_DATA')")
+//    @PreAuthorize("hasAuthority('READ_DATA')")
     public List<UserResponse> getUsers() {
         log.info("getUsers()");
         List<User> users = userRepository.findAll();
@@ -113,7 +113,7 @@ public class UserService {
         userRepository.deleteAll();
     }
 
-    @PostAuthorize("returnObject.username == authentication.name")
+//    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse getUser(String id) {
         log.info("getUser({})", id);
         UserResponse userResponse = new UserResponse();

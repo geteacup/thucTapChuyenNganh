@@ -6,7 +6,7 @@ import com.example.IdentityService.entity.ChiTietGioHang;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring" , uses = {UserMapper.class, TonKhoMapper.class})
 
 public interface ChiTietGioHangMapper {
     ChiTietGioHangResponse toChiTietGioHangResponse(ChiTietGioHang chiTietGioHang);

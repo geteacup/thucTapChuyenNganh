@@ -5,7 +5,7 @@ import com.example.IdentityService.dto.response.ChiTietHoaDonResponse;
 import com.example.IdentityService.entity.ChiTietHoaDon;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring" , uses = {HoaDonMapper.class, TonKhoMapper.class})
 
 public interface ChiTietHoaDonMapper {
 

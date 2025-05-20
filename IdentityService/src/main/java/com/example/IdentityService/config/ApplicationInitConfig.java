@@ -48,31 +48,23 @@ public class ApplicationInitConfig {
     @Transactional
     public void createAdmin() {
         if (userRepository.findByUsername("admin").isEmpty()) {
+            // Create ADMIN role if it doesn't exist
+            Role adminRole = roleRepository.findByRoleName("ADMIN")
+                .orElseGet(() -> {
+                    Role newRole = new Role();
+                    newRole.setRoleName("ADMIN");
+                    return roleRepository.save(newRole);
+                });
 
-//            List<String> listRoles = new ArrayList<>();
-//            listRoles.add("ADMIN");
-//            UserCreationRequest userCreationRequest = UserCreationRequest.builder()
-//                    .username("admin")
-//                    .password(passwordEncoder.encode("admin666"))
-//                    .roles(new HashSet<String>(listRoles))
-//                    .build();
-//            userService.createUser(userCreationRequest);
-//
-//            listRoles = new ArrayList<>();
-//            listRoles.add("ADMIN");
-//
-//            var roles = roleRepository.findAllById(listRoles);
-//            for (Role role : roles) {
-//                Hibernate.initialize(role.getPermissionSet());
-//            }
-//            User user = User.builder()
-//                    .username("admin")
-//                    .password(passwordEncoder.encode("admin666"))
-//                    .roles(new HashSet<>(roles))
-//                    .build();
-//            userRepository.save(user);
-//            log.info("ADMIN created");
-//
-          }
+            // Create admin user
+            User adminUser = User.builder()
+                .username("admin")
+                .password(passwordEncoder.encode("admin666"))
+                .roles(new HashSet<>(Collections.singletonList(adminRole)))
+                .build();
+            
+            userRepository.save(adminUser);
+            log.info("Admin user created successfully");
+        }
     }
 }

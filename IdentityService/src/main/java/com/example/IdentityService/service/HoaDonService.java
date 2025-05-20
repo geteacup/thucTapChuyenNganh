@@ -1,6 +1,7 @@
 package com.example.IdentityService.service;
 
 import com.example.IdentityService.dto.request.HoaDonRequest;
+import com.example.IdentityService.dto.request.TrangThaiHoaDonRequest;
 import com.example.IdentityService.dto.response.HoaDonResponse;
 import com.example.IdentityService.entity.HoaDon;
 import com.example.IdentityService.entity.User;
@@ -22,7 +23,6 @@ public class HoaDonService {
     private final UserRepository userRepository;
     private final HoaDonMapper hoaDonMapper;
 
-    @Autowired
     HoaDonService(HoaDonRepository HoaDonRepository
             , UserRepository userRepository
             , HoaDonMapper hoaDonMapper) {
@@ -36,37 +36,47 @@ public class HoaDonService {
                 .orElseThrow(()-> new RuntimeException("something went wrong")));
         return hoaDonResponse;
     }
+    public List<HoaDonResponse> getAllHoaDonByUserKH(String userKH) {
+        return  hoaDonRepository.findAllByUserKH(userRepository.findById(userKH)
+                        .orElseThrow(()->new RuntimeException("Somethingwrong")))
+                        .stream().map(hoaDonMapper::toHoaDonResponse).toList();
+    }
+    public List<HoaDonResponse> getAllHoaDonByUserNV(String userNV) {
+        return  hoaDonRepository.findAllByUserNV(userRepository.findById(userNV)
+                        .orElseThrow(()->new RuntimeException("Somethingwrong")))
+                .stream().map(hoaDonMapper::toHoaDonResponse).toList();
+    }
+    public List<HoaDonResponse> getAllHoaDon(){
+        return hoaDonRepository.findAll().stream().map(hoaDonMapper::toHoaDonResponse).toList();
+    }
+    public List<HoaDonResponse> getAllHoaDonByStatus(String status) {
+        return  hoaDonRepository.findAllByStatus(status)
+                .stream().map(hoaDonMapper::toHoaDonResponse).toList();
+    }
+    public List<HoaDonResponse> getAllHoaDonByUserAndStatus(String username,String status) {
+        return  hoaDonRepository.findAllByUserNVAndStatus(userRepository.findByUsername(username)
+                        .orElseThrow(()->new RuntimeException("Somethingwrong")),status)
+                .stream().map(hoaDonMapper::toHoaDonResponse).toList();
+    }
     public HoaDonResponse createHoaDon(HoaDonRequest hoaDonRequest) {
         HoaDon hoaDon = hoaDonMapper.toHoaDon(hoaDonRequest);
-        if(userRepository.existsById(hoaDonRequest.getUserKH())){
-            User user = userRepository.findById(hoaDonRequest.getUserKH()).orElse(null);
-            hoaDon.setUserKH(user);
-        }
-        if(userRepository.existsById(hoaDonRequest.getUserNV())){
-            User user = userRepository.findById(hoaDonRequest.getUserKH()).orElse(null);
-            hoaDon.setUserNV(user);
-        }
-        hoaDonRepository.save(hoaDon);
-        return hoaDonMapper.toHoaDonResponse(hoaDon);
-    }
-    public HoaDonResponse updateHoaDon(String maHD,HoaDonRequest hoaDonRequest){
-        HoaDon hoaDon = hoaDonRepository.findById(maHD).orElse(null);
-        hoaDon = hoaDonMapper.toHoaDon(hoaDonRequest);
-        if(userRepository.existsById(hoaDonRequest.getUserKH())){
-            User user = userRepository.findById(hoaDonRequest.getUserKH()).orElse(null);
-            hoaDon.setUserKH(user);
-        }
-        if(userRepository.existsById(hoaDonRequest.getUserNV())){
-            User user = userRepository.findById(hoaDonRequest.getUserKH()).orElse(null);
-            hoaDon.setUserNV(user);
+
+        if(hoaDonRequest.getUserKH() != null){
+            if(userRepository.existsById(hoaDonRequest.getUserKH())){
+                User user = userRepository.findById(hoaDonRequest.getUserKH()).orElse(null);
+                hoaDon.setUserKH(user);
+            }
         }
         hoaDonRepository.save(hoaDon);
         return hoaDonMapper.toHoaDonResponse(hoaDon);
     }
-    public void changeStatus(String maHD,HoaDonRequest hoaDonRequest){
-        HoaDon hoaDon = hoaDonRepository.findById(maHD)
+    public void changeStatus(TrangThaiHoaDonRequest trangThaiHoaDonRequest){
+        HoaDon hoaDon = hoaDonRepository.findById(trangThaiHoaDonRequest.getMaHD())
                 .orElseThrow(()-> new RuntimeException("something went wrong"));
-        hoaDon.setStatus("Hoan Thanh");
+        hoaDon.setStatus(trangThaiHoaDonRequest.getStatus());
+        User user = userRepository.findById(trangThaiHoaDonRequest.getUserNV())
+                .orElseThrow(()-> new RuntimeException("something went wrong"));
+        hoaDon.setUserNV(user);
         hoaDonRepository.save(hoaDon);
     }
     public void deleteHoaDonById(String maHD) {

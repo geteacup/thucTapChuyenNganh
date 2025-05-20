@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: #4e73df;
+            color: white;
+        }
+        .nav-link {
+            color: rgba(255,255,255,.8);
+        }
+        .nav-link:hover {
+            color: white;
+        }
+        .nav-link.active {
+            color: white;
+            background: rgba(255,255,255,.1);
+        }
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar p-3">
+                <h4 class="mb-4">Admin Dashboard</h4>
+                <div class="nav flex-column">
+                    <a class="nav-link active" href="#" data-target="categories">
+                        <i class="fas fa-list me-2"></i>Loại sản phẩm
+                    </a>
+                    <a class="nav-link" href="#" data-target="suppliers">
+                        <i class="fas fa-truck me-2"></i>Nhà cung cấp
+                    </a>
+                    <a class="nav-link" href="#" data-target="products">
+                        <i class="fas fa-box me-2"></i>Sản phẩm
+                    </a>
+                    <a class="nav-link" href="#" data-target="users">
+                        <i class="fas fa-users me-2"></i>Users
+                    </a>
+                    <a class="nav-link" href="#" data-target="roles">
+                        <i class="fas fa-user-tag me-2"></i>Roles
+                    </a>
+                    <a class="nav-link" href="#" data-target="permissions">
+                        <i class="fas fa-key me-2"></i>Permissions
+                    </a>
+                    <a class="nav-link text-danger" href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                    </a>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10 content">
+                <!-- Categories Section -->
+                <div id="categories" class="section active">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Quản lý Loại sản phẩm</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal">
+                            <i class="fas fa-plus me-2"></i>Thêm mới
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Mã loại</th>
+                                    <th>Tên loại</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categoryTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Suppliers Section -->
+                <div id="suppliers" class="section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Quản lý Nhà cung cấp</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#supplierModal">
+                            <i class="fas fa-plus me-2"></i>Thêm mới
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Mã NCC</th>
+                                    <th>Tên NCC</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="supplierTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Products Section -->
+                <div id="products" class="section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Quản lý Sản phẩm</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                            <i class="fas fa-plus me-2"></i>Thêm mới
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Mã SP</th>
+                                    <th>Tên SP</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Loại SP</th>
+                                    <th>NCC</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Users Section -->
+                <div id="users" class="section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Quản lý Users</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal">
+                            <i class="fas fa-plus me-2"></i>Thêm mới
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Roles Section -->
+                <div id="roles" class="section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Quản lý Roles</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#roleModal">
+                            <i class="fas fa-plus me-2"></i>Thêm mới
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Role Name</th>
+                                    <th>Description</th>
+                                    <th>Permissions</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roleTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Permissions Section -->
+                <div id="permissions" class="section d-none">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2>Quản lý Permissions</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#permissionModal">
+                            <i class="fas fa-plus me-2"></i>Thêm mới
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Permission Name</th>
+                                    <th>Description</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="permissionTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals for CRUD operations -->
+    <!-- Category Modal -->
+    <div class="modal fade" id="categoryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Loại sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="categoryForm">
+                        <input type="hidden" id="categoryId">
+                        <div class="mb-3">
+                            <label class="form-label">Tên loại</label>
+                            <input type="text" class="form-control" id="categoryName" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveCategoryBtn">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supplier Modal -->
+    <div class="modal fade" id="supplierModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nhà cung cấp</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="supplierForm">
+                        <input type="hidden" id="supplierId">
+                        <div class="mb-3">
+                            <label class="form-label">Tên nhà cung cấp</label>
+                            <input type="text" class="form-control" id="supplierName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Địa chỉ</label>
+                            <input type="text" class="form-control" id="supplierAddress" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="supplierPhone" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveSupplierBtn">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <input type="hidden" id="productId">
+                        <div class="mb-3">
+                            <label class="form-label">Tên sản phẩm</label>
+                            <input type="text" class="form-control" id="productName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Giá</label>
+                            <input type="number" class="form-control" id="productPrice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số lượng</label>
+                            <input type="number" class="form-control" id="productQuantity" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Loại sản phẩm</label>
+                            <select class="form-control" id="productCategory" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nhà cung cấp</label>
+                            <select class="form-control" id="productSupplier" required></select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hình ảnh</label>
+                            <input type="file" class="form-control" id="productImage" accept="image/*">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveProductBtn">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="userId">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" id="userEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-control" id="userPassword">
+                            <small class="text-muted">Leave blank to keep current password when editing</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-control" id="userRole" required></select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveUserBtn">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Modal -->
+    <div class="modal fade" id="roleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Role</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="roleForm">
+                        <input type="hidden" id="roleId">
+                        <div class="mb-3">
+                            <label class="form-label">Role Name</label>
+                            <input type="text" class="form-control" id="roleName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <input type="text" class="form-control" id="roleDescription">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Permissions</label>
+                            <div id="permissionCheckboxes" class="form-check"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveRoleBtn">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permission Modal -->
+    <div class="modal fade" id="permissionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Permission</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="permissionForm">
+                        <input type="hidden" id="permissionId">
+                        <div class="mb-3">
+                            <label class="form-label">Permission Name</label>
+                            <input type="text" class="form-control" id="permissionName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="permissionDescription" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="savePermissionBtn">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html> 

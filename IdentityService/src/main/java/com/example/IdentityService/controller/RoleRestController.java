@@ -27,7 +27,10 @@ public class RoleRestController {
         RoleResponse result = roleService.createRole(request);
         return ApiResponse.<RoleResponse>builder().result(result).build();
     }
-
+    @PutMapping("/{roleId}")
+    public ApiResponse<RoleResponse> updateRole(@PathVariable String roleId, @RequestBody RoleRequest request) {
+        return ApiResponse.<RoleResponse>builder().result(roleService.updateRole(roleId, request)).build();
+    }
     @GetMapping()
     public ApiResponse<List<RoleResponse>> findAll() {
         List<RoleResponse> roles = roleService.findAllRoles();

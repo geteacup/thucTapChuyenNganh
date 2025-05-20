@@ -19,6 +19,6 @@ public class TonKhoResponse {
     private float daiSP;
     private float rongSP;
     private int soLuongSP;
-    private LoaiSanPhamResponse loaiSanPhamResponse;
-    private NhaCungCapResponse nhaCungCapResponse;
+    private LoaiSanPhamResponse loaiSanPham;
+    private NhaCungCapResponse nhaCungCap;
 }

@@ -1,56 +1,963 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #858796;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8f9fc;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            padding: 1rem 0;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 600;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 10rem;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        .search-box .form-control {
+            border: none;
+            box-shadow: none;
+            padding: 0.5rem 1rem;
+        }
+
+        .search-box .btn {
+            border-radius: 10rem;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .product-card {
+            background: white;
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-card img {
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .product-card .card-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-card .price {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .btn-add-cart {
+            border-radius: 10rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-cart:hover {
+            transform: translateY(-2px);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform: translate(50%, -50%);
+            border-radius: 50%;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .modal-content {
+            border-radius: 1rem;
+            border: none;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+
+        .modal-title {
+            font-weight: 700;
+        }
+
+        .cart-item {
+            background: #f8f9fc;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .cart-item img {
+            border-radius: 0.5rem;
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .quantity-control {
+            background: white;
+            border-radius: 10rem;
+            padding: 0.25rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .quantity-control button {
+            border: none;
+            background: none;
+            color: var(--primary-color);
+            padding: 0.25rem 0.75rem;
+            font-weight: 700;
+        }
+
+        .quantity-control span {
+            padding: 0 1rem;
+            font-weight: 600;
+        }
+
+        .dropdown-menu {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fc;
+        }
+    </style>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-store me-2"></i>E-Shop
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="homeLink">
+                            <i class="fas fa-home me-1"></i>Trang chủ
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-th-list me-1"></i>Danh mục
+                        </a>
+                        <ul class="dropdown-menu" id="categoryList"></ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="supplierDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-truck me-1"></i>Nhà cung cấp
+                        </a>
+                        <ul class="dropdown-menu" id="supplierList"></ul>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <div class="position-relative me-3">
+                        <button class="btn btn-light rounded-circle" data-bs-toggle="modal" data-bs-target="#cartModal">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="badge bg-danger cart-badge" id="cartCount">0</span>
+                        </button>
+                    </div>
+            <div class="dropdown">
+                        <button class="btn btn-light rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="#" id="viewOrders">
+                                    <i class="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#" id="logoutBtn">
+                                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+            </div>
+            </div>
+        </div>
+    </nav>
 
-<h2>Danh sách sản phẩm</h2>
-<div id="product-list">
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col">
+                <div class="search-box">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm..." id="searchInput">
+                        <button class="btn btn-primary" type="button" id="searchBtn">
+                            <i class="fas fa-search me-1"></i>Tìm kiếm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-</div>
+        <div class="row" id="productList">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
 
-<script>
-    async function loadProducts() {
+    <!-- Cart Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-shopping-cart me-2"></i>Giỏ hàng
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cartItems">
+                        <!-- Cart items will be loaded here -->
+                    </div>
+                    <div class="text-end mt-3">
+                        <h5>Tổng tiền: <span id="cartTotal">0</span> VNĐ</h5>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Đóng
+                    </button>
+                    <button type="button" class="btn btn-primary" id="checkoutBtn">
+                        <i class="fas fa-check me-2"></i>Thanh toán
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-try{
-        var res = await fetch("/identity/tonkho", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
+    <!-- Orders Modal -->
+    <div class="modal fade" id="ordersModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="ordersList">
+                        <!-- Orders will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Details Modal -->
+    <div class="modal fade" id="productDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chi tiết sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img id="productDetailImage" src="" class="img-fluid rounded" alt="Product Image">
+                        </div>
+                        <div class="col-md-6">
+                            <h3 id="productDetailName" class="mb-3"></h3>
+                            <p id="productDetailDescription" class="text-muted mb-3"></p>
+                            <div class="mb-3">
+                                <h4 class="text-primary" id="productDetailPrice"></h4>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Kích thước:</strong>
+                                <span id="productDetailSize"></span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Số lượng còn lại:</strong>
+                                <span id="productDetailQuantity"></span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Loại sản phẩm:</strong>
+                                <span id="productDetailCategory"></span>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Nhà cung cấp:</strong>
+                                <span id="productDetailSupplier"></span>
+                            </div>
+                            <div class="mb-4">
+                                <strong>Số lượng mua:</strong>
+                                <div class="input-group mt-2" style="width: 150px;">
+                                    <button class="btn btn-outline-secondary" type="button" id="detailDecreaseQuantity">-</button>
+                                    <input type="number" class="form-control text-center" id="detailQuantity" value="1" min="1">
+                                    <button class="btn btn-outline-secondary" type="button" id="detailIncreaseQuantity">+</button>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-primary btn-add-cart" id="detailAddToCart">
+                                    <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ hàng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script th:inline="javascript">
+        // Setup axios interceptor for token
+        axios.interceptors.request.use(
+            (config) => {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+                return config;
+            },
+            (error) => {
+                return Promise.reject(error);
+            }
+        );
+
+        // Handle unauthorized responses
+        axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userId');
+                    window.location.href = '/login';
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        let currentUser = null;
+
+        // Load user info
+        async function loadUserInfo() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    updateHeaderButtons(false);
+                    return null;
+                }
+
+                const response = await axios.get('/users/myInfo');
+                currentUser = response.data.result;
+                console.log('Current user loaded:', currentUser);
+                
+                if (currentUser && currentUser.id) {
+                    localStorage.setItem('userId', currentUser.id);
+                    updateHeaderButtons(true);
+                    await loadCart();
+                    return currentUser;
+                } else {
+                    throw new Error('Invalid user data received');
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('userId');
+                }
+                updateHeaderButtons(false);
+                return null;
+            }
+        }
+
+        // Update header buttons based on authentication status
+        function updateHeaderButtons(isAuthenticated) {
+            const cartButton = document.querySelector('.position-relative');
+            const userDropdown = document.querySelector('.dropdown');
+            
+            if (isAuthenticated) {
+                cartButton.innerHTML = `
+                    <button class="btn btn-light rounded-circle" data-bs-toggle="modal" data-bs-target="#cartModal">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="badge bg-danger cart-badge" id="cartCount">0</span>
+                    </button>
+                `;
+                userDropdown.style.display = '';
+            } else {
+                cartButton.innerHTML = `
+                    <a href="/login" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                    </a>
+                `;
+                userDropdown.style.display = 'none';
+            }
+        }
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                const response = await axios.get('/loaisanpham');
+                const categories = response.data.result;
+                const categoryList = document.getElementById('categoryList');
+                categoryList.innerHTML = categories.map(category => `
+                    <li><a class="dropdown-item" href="#" data-category="${category.maLoai}">${category.tenLoai}</a></li>
+                `).join('');
+
+                // Add category click handlers
+                categoryList.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        loadProducts(e.target.dataset.category);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Load suppliers
+        async function loadSuppliers() {
+            try {
+                const response = await axios.get('/nhacungcap');
+                const suppliers = response.data.result;
+                const supplierList = document.getElementById('supplierList');
+                supplierList.innerHTML = suppliers.map(supplier => `
+                    <li><a class="dropdown-item" href="#" data-supplier="${supplier.maNCC}">${supplier.tenNCC}</a></li>
+                `).join('');
+
+                // Add supplier click handlers
+                supplierList.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        loadProductsBySupplier(e.target.dataset.supplier);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading suppliers:', error);
+            }
+        }
+
+        // Load products by supplier
+        async function loadProductsBySupplier(supplierId) {
+            try {
+                const response = await axios.get(`/tonkho/nhacungcap/${supplierId}`);
+                const products = response.data.result;
+                displayProducts(products);
+            } catch (error) {
+                console.error('Error loading products by supplier:', error);
+            }
+        }
+
+        // Display products function
+        function displayProducts(products) {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = products.map(product => `
+                <div class="col-md-4 mb-4">
+                    <div class="card product-card" data-product='${JSON.stringify(product)}'>
+                        <img src="/images/${product.anhSP}" class="card-img-top" alt="${product.tenSP}">
+                        <div class="card-body">
+                            <h5 class="card-title">${product.tenSP}</h5>
+                            <p class="card-text">${product.motaSP}</p>
+                            <p class="card-text"><strong>Giá: ${product.giaSP.toLocaleString('vi-VN')} VNĐ</strong></p>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="input-group me-3" style="width: 120px;">
+                                    <button class="btn btn-outline-secondary decrease-quantity" type="button">-</button>
+                                    <input type="number" class="form-control text-center product-quantity" value="1" min="1" max="${product.soLuongSP}">
+                                    <button class="btn btn-outline-secondary increase-quantity" type="button">+</button>
+                                </div>
+                                <button class="btn btn-primary add-to-cart" data-product-id="${product.maSP}">
+                                    <i class="fas fa-cart-plus me-1"></i>Thêm vào giỏ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers for product cards
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!e.target.closest('.add-to-cart')) {
+                        const productData = JSON.parse(this.getAttribute('data-product'));
+                        showProductDetails(productData);
+                    }
+                });
+            });
+
+            // Add quantity control handlers
+            document.querySelectorAll('.decrease-quantity').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const input = e.target.parentElement.querySelector('.product-quantity');
+                    const value = parseInt(input.value);
+                    if (value > 1) {
+                        input.value = value - 1;
+                    }
+                });
+            });
+
+            document.querySelectorAll('.increase-quantity').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const input = e.target.parentElement.querySelector('.product-quantity');
+                    const max = parseInt(input.getAttribute('max'));
+                    const value = parseInt(input.value);
+                    if (value < max) {
+                        input.value = value + 1;
+                    }
+                });
+            });
+
+            // Add to cart handlers
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (!currentUser) {
+                        window.location.href = '/login';
+                        return;
+                    }
+                    const productId = e.target.closest('.add-to-cart').dataset.productId;
+                    const quantityInput = e.target.closest('.card-body').querySelector('.product-quantity');
+                    const quantity = parseInt(quantityInput.value);
+
+                    try {
+                        const response = await axios.post('/giohang/add', {
+                            tonKho: productId,
+                            soLuong: quantity,
+                            user: currentUser.id
+                        });
+                        
+                        if (response.data.result) {
+                            alert('Đã thêm vào giỏ hàng!');
+                            loadCart();
+                        }
+                    } catch (error) {
+                        console.error('Error adding to cart:', error);
+                        alert(error.response?.data?.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+                    }
+                });
+            });
+        }
+
+        // Load products
+        async function loadProducts(categoryId = null) {
+            try {
+                let url = '/tonkho';
+                if (categoryId) {
+                    url = `/tonkho/loaisanpham/${categoryId}`;
+                }
+                const response = await axios.get(url);
+                const products = response.data.result;
+                displayProducts(products);
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        // Load cart
+        async function loadCart() {
+            if (!currentUser) return;
+            
+            try {
+                const userId = currentUser.id; // Use currentUser instead of localStorage
+                console.log('Loading cart for user:', userId);
+                const response = await axios.get(`/giohang/my`, {
+                    params: { userId: userId }
+                });
+                const cartItems = response.data.result;
+                const cartItemsDiv = document.getElementById('cartItems');
+                const cartTotal = document.getElementById('cartTotal');
+                document.getElementById('cartCount').textContent = cartItems.length;
+
+                if (!cartItems || cartItems.length === 0) {
+                    cartItemsDiv.innerHTML = '<div class="text-center p-3">Giỏ hàng trống</div>';
+                    cartTotal.textContent = '0';
+                    return;
+                }
+
+                let total = 0;
+
+                console.log(cartItems);
+                cartItemsDiv.innerHTML = cartItems.map(item => {
+                    if (!item.tonKho) {
+                        console.error('Invalid cart item:', item);
+                        return 'lỗi load';
+                    }
+                    const itemTotal = item.tonKho.giaSP * item.soLuong;
+                    total += itemTotal;
+                    return `
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        <img src="/images/${item.tonKho.anhSP}" class="img-fluid rounded" alt="${item.tonKho.tenSP}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <h5 class="card-title">${item.tonKho.tenSP}</h5>
+                                        <p class="card-text">Giá: ${item.tonKho.giaSP.toLocaleString('vi-VN')} VNĐ</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <button class="btn btn-outline-secondary cart-decrease" data-product-id="${item.tonKho.maSP}" type="button">-</button>
+                                            <input type="number" class="form-control text-center" value="${item.soLuong}" readonly>
+                                            <button class="btn btn-outline-secondary cart-increase" data-product-id="${item.tonKho.maSP}" type="button">+</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <p class="text-end mb-0">${itemTotal.toLocaleString('vi-VN')} VNĐ</p>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <button class="btn btn-danger btn-sm remove-from-cart" data-product-id="${item.tonKho.maSP}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                cartTotal.textContent = total.toLocaleString('vi-VN');
+
+                // Add cart item handlers
+                document.querySelectorAll('.cart-decrease').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const productId = e.target.dataset.productId;
+                        try {
+                            await axios.get(`/giohang/minus/${productId}`, {
+                                params: { userId: currentUser.id }
+                            });
+                            loadCart();
+                        } catch (error) {
+                            console.error('Error updating cart:', error);
+                            alert('Có lỗi xảy ra khi cập nhật giỏ hàng');
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.cart-increase').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const productId = e.target.dataset.productId;
+                        try {
+                            await axios.get(`/giohang/plus/${productId}`, {
+                                params: { userId: currentUser.id }
+                            });
+                            loadCart();
+                        } catch (error) {
+                            console.error('Error updating cart:', error);
+                            alert('Có lỗi xảy ra khi cập nhật giỏ hàng');
+                        }
+                    });
+                });
+
+                document.querySelectorAll('.remove-from-cart').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        if (confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+                            const productId = e.target.closest('.remove-from-cart').dataset.productId;
+                            try {
+                                await axios.delete(`/giohang/${productId}`, {
+                                    params: { userId: currentUser.id }
+                                });
+                                loadCart();
+                            } catch (error) {
+                                console.error('Error removing from cart:', error);
+                                alert('Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng');
+                            }
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading cart:', error);
+                if (error.response) {
+                    console.log('Error response:', error.response.data);
+                    if (error.response.status === 401) {
+                        window.location.href = '/login';
+                    } else {
+                        alert('Lỗi: ' + (error.response.data.message || 'Có lỗi xảy ra khi tải giỏ hàng'));
+                    }
+                } else {
+                    alert('Có lỗi xảy ra khi tải giỏ hàng');
+                }
+            }
+        }
+
+        // Load orders
+        async function loadOrders() {
+            try {
+                const response = await axios.get(`/hoadon/home/${currentUser.id}`);
+                const orders = response.data.result;
+                const ordersList = document.getElementById('ordersList');
+
+                if (!orders || orders.length === 0) {
+                    ordersList.innerHTML = '<div class="text-center p-3">Bạn chưa có đơn hàng nào</div>';
+                    return;
+                }
+
+                ordersList.innerHTML = orders.map(order => `
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Đơn hàng #${order.maHD}</h5>
+                            <p>Ngày đặt: ${new Date(order.ngayTao).toLocaleDateString('vi-VN')}</p>
+                            <p>Trạng thái: ${order.status}</p>
+                            <button class="btn btn-primary view-order-details" data-order-id="${order.maHD}">
+                                Xem chi tiết
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add order detail handlers
+                document.querySelectorAll('.view-order-details').forEach(button => {
+                    button.addEventListener('click', async (e) => {
+                        const orderId = e.target.dataset.orderId;
+                        try {
+                            const detailsResponse = await axios.get(`/hoadon/chitiet/${orderId}`);
+                            const details = detailsResponse.data.result;
+                            
+                            const orderCard = e.target.closest('.card-body');
+                            
+                            // Check if details exists
+                            if (!details) {
+                                console.error('Invalid details data:', details);
+                                alert('Dữ liệu chi tiết đơn hàng không hợp lệ');
+                                return;
+                            }
+                            
+                            // Calculate total
+                            const total = details.reduce((sum, detail) => {
+                                if (detail.tonKho && detail.tonKho.giaSP) {
+                                    return sum + (detail.tonKho.giaSP * detail.soLuong);
+                                }
+                                return sum;
+                            }, 0);
+
+                            orderCard.innerHTML += `
+                                <div class="mt-3">
+                                    <h6>Chi tiết đơn hàng:</h6>
+                                    ${details.map(detail => {
+                                        if (!detail.tonKho) {
+                                            console.error('Invalid detail item:', detail);
+                                            return '';
+                                        }
+                                        const itemTotal = detail.tonKho.giaSP * detail.soLuong;
+                                        return `
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <span>${detail.tonKho.tenSP} x ${detail.soLuong}</span>
+                                                <span>${itemTotal.toLocaleString('vi-VN')} VNĐ</span>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                    <div class="border-top pt-2 mt-2">
+                                        <strong>Tổng cộng: ${total.toLocaleString('vi-VN')} VNĐ</strong>
+                                    </div>
+                                </div>
+                            `;
+                            e.target.style.display = 'none';
+                        } catch (error) {
+                            console.error('Error loading order details:', error);
+                            alert('Có lỗi xảy ra khi tải chi tiết đơn hàng: ' + (error.response?.data?.message || error.message));
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                alert('Có lỗi xảy ra khi tải danh sách đơn hàng');
+            }
+        }
+
+        // Checkout handler
+        document.getElementById('checkoutBtn').addEventListener('click', async () => {
+            try {
+                const response = await axios.post('/hoadon', {
+                    userKH: currentUser.id,
+                    status: 'processing',
+                    ngayTao: new Date().toISOString().split('T')[0]
+                });
+                
+                if (response.data.result) {
+                    alert('Đặt hàng thành công!');
+                    loadCart();
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('cartModal'));
+                    modal.hide();
+                }
+            } catch (error) {
+                console.error('Error checking out:', error);
+                alert('Có lỗi xảy ra khi đặt hàng');
             }
         });
 
-        const data = await res.json();
-
-        const container = document.getElementById('product-list');
-
-
-        data.result.forEach(sp => {
-            const product = document.createElement('div');
-            product.className = 'product';
-            product.innerHTML = `
-      <img   src="/identity/images/${sp.anhSP}" width="400" alt="${sp.anhSP}"/>
-      <h3>${sp.tenSP}</h3>
-      <p><strong>Mã:</strong> ${sp.maSP}</p>
-      <p><strong>Giá:</strong> ${Number(sp.giaSP).toLocaleString()} VNĐ</p>
-      <p><strong>Kích thước:</strong> ${sp.daiSP}m x ${sp.rongSP}m</p>
-      <p><strong>Số lượng:</strong> ${sp.soLuongSP.toLocaleString()}</p>
-    `;
-            container.appendChild(product);
+        // View orders handler
+        document.getElementById('viewOrders').addEventListener('click', (e) => {
+            e.preventDefault();
+            loadOrders();
+            const ordersModal = new bootstrap.Modal(document.getElementById('ordersModal'));
+            ordersModal.show();
         });
-    }
-    catch (err) {
-        const product = document.createElement('div');
-        product.className = 'product';
-        product.innerHTML = 'khong load duoc';
-        const container = document.getElementById('product-list');
-        container.appendChild(product);
-    }
-    }
-loadProducts();
-</script>
 
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await axios.post('/auth/logout', {
+                    token: localStorage.getItem('token')
+                });
+            } catch (error) {
+                console.error('Error logging out:', error);
+            } finally {
+                localStorage.removeItem('token');
+                localStorage.removeItem('userId');
+                window.location.href = '/login';
+            }
+        });
+
+        // Search handler
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const products = document.querySelectorAll('.product-card');
+            products.forEach(product => {
+                const title = product.querySelector('.card-title').textContent.toLowerCase();
+                const description = product.querySelector('.card-text').textContent.toLowerCase();
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    product.closest('.col-md-4').style.display = '';
+                } else {
+                    product.closest('.col-md-4').style.display = 'none';
+                }
+            });
+        });
+
+        // Function to show product details
+        function showProductDetails(product) {
+            document.getElementById('productDetailImage').src = `/images/${product.anhSP}`;
+            document.getElementById('productDetailName').textContent = product.tenSP;
+            document.getElementById('productDetailDescription').textContent = product.motaSP;
+            document.getElementById('productDetailPrice').textContent = product.giaSP.toLocaleString('vi-VN') + ' VNĐ';
+            document.getElementById('productDetailSize').textContent = product.daiSP + ' x ' + product.rongSP + ' cm';
+            document.getElementById('productDetailQuantity').textContent = product.soLuongSP;
+            document.getElementById('productDetailCategory').textContent = product.loaiSanPham.tenLoai;
+            document.getElementById('productDetailSupplier').textContent = product.nhaCungCap.tenNCC;
+            
+            // Set max quantity for detail quantity input
+            const detailQuantityInput = document.getElementById('detailQuantity');
+            detailQuantityInput.max = product.soLuongSP;
+            detailQuantityInput.value = 1;
+
+            // Add event listeners for quantity controls
+            document.getElementById('detailDecreaseQuantity').onclick = () => {
+                const value = parseInt(detailQuantityInput.value);
+                if (value > 1) {
+                    detailQuantityInput.value = value - 1;
+                }
+            };
+
+            document.getElementById('detailIncreaseQuantity').onclick = () => {
+                const value = parseInt(detailQuantityInput.value);
+                const max = parseInt(detailQuantityInput.max);
+                if (value < max) {
+                    detailQuantityInput.value = value + 1;
+                }
+            };
+
+            // Add event listener for add to cart button
+            document.getElementById('detailAddToCart').onclick = async () => {
+                if (!currentUser) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const quantity = parseInt(detailQuantityInput.value);
+                try {
+                    const response = await axios.post('/giohang/add', {
+                        tonKho: product.maSP,
+                        soLuong: quantity,
+                        user: currentUser.id
+                    });
+                    
+                    if (response.data.result) {
+                        alert('Đã thêm vào giỏ hàng!');
+                        loadCart();
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('productDetailsModal'));
+                        modal.hide();
+                    }
+                } catch (error) {
+                    console.error('Error adding to cart:', error);
+                    alert(error.response?.data?.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+                }
+            };
+            
+            const productDetailsModal = new bootstrap.Modal(document.getElementById('productDetailsModal'));
+            productDetailsModal.show();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadUserInfo();
+            await loadCategories();
+            await loadSuppliers();
+            await loadProducts();
+        });
+    </script>
 </body>
 </html>

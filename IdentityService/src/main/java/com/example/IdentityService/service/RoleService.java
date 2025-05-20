@@ -49,6 +49,19 @@ public class RoleService {
         return roleMapper.toRoleResponse(role);
     }
 
+    public RoleResponse updateRole(String roleId, RoleRequest roleRequest) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(()-> new RuntimeException("something went wrong"));
+        roleMapper.updateRole(roleRequest,role);
+        var permissionSet = permissionRepository.findAllById(roleRequest.getPermissionSet());
+        role.setPermissionSet(new HashSet<>(permissionSet));
+        role = roleRepository.save(role);
+        RoleResponse roleResponse = roleMapper.toRoleResponse(role);
+        roleResponse.setPermissionSet(new HashSet<>(permissionSet.stream()
+                .map(permissionMapper::toPermissionResponse)
+                .toList()));
+        return roleMapper.toRoleResponse(role);
+    }
     public void deleteRole(String id) {
         roleRepository.deleteById(id);
     }

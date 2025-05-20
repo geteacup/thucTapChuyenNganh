@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #858796;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8f9fc;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            padding: 1rem 0;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 10rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+        }
+
+        .order-card {
+            background: white;
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .order-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.5rem 1.5rem;
+            border-radius: 10rem;
+            font-weight: 600;
+        }
+
+        .status-processing {
+            background-color: var(--warning-color);
+            color: #000;
+        }
+
+        .status-accepted {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .status-completed {
+            background-color: var(--success-color);
+            color: #fff;
+        }
+
+        .status-cancelled {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        .btn {
+            border-radius: 10rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 1rem;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .customer-info {
+            background: #f8f9fc;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .customer-info h6 {
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            font-weight: 700;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            border-top: none;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .order-total {
+            background: #f8f9fc;
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .order-total strong {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-tasks me-2"></i>Staff Panel
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-status="processing">
+                            <i class="fas fa-clock"></i>Đơn hàng mới
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-status="accepted">
+                            <i class="fas fa-spinner"></i>Đang xử lý
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-status="completed">
+                            <i class="fas fa-check-circle"></i>Đã hoàn thành
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-status="cancelled">
+                            <i class="fas fa-times-circle"></i>Đã hủy
+                        </a>
+                    </li>
+                </ul>
+                <button class="btn btn-light" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>Đăng xuất
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row" id="ordersList">
+            <!-- Orders will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div class="modal fade" id="orderDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-file-alt me-2"></i>Chi tiết đơn hàng
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="orderDetails">
+                        <!-- Order details will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer" id="orderActions">
+                    <!-- Order action buttons will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script th:inline="javascript">
+        // Setup axios interceptor
+        axios.interceptors.request.use(
+            (config) => {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+                return config;
+            },
+            (error) => {
+                return Promise.reject(error);
+            }
+        );
+
+        // Handle unauthorized responses
+        axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        let currentUser = null;
+        let currentStatus = 'processing';
+
+        // Load user info
+        async function loadUserInfo() {
+            try {
+                const response = await axios.get('/users/myInfo');
+                currentUser = response.data.result;
+                return currentUser;
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                window.location.href = '/login';
+            }
+        }
+
+        // Status badge helper
+        function getStatusBadge(status) {
+            return `<span class="status-badge status-${status.toLowerCase()}">${status}</span>`;
+        }
+
+        // Format date helper
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        // Load orders
+        async function loadOrders() {
+            try {
+                const response = await axios.get(`/hoadon/status/${currentStatus}`);
+                const orders = response.data.result;
+                const ordersList = document.getElementById('ordersList');
+
+                ordersList.innerHTML = orders.map(order => `
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card order-card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="card-title mb-0">Đơn hàng #${order.maHD}</h5>
+                                    ${getStatusBadge(order.status)}
+                                </div>
+                                <p class="card-text">
+                                    <strong>Khách hàng:</strong> ${order.userKHResponse.firstName} ${order.userKHResponse.lastName}<br>
+                                    <strong>Ngày đặt:</strong> ${formatDate(order.ngayTao)}
+                                </p>
+                                <button class="btn btn-primary view-order" data-order-id="${order.maHD}">
+                                    Xem chi tiết
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add view order handlers
+                document.querySelectorAll('.view-order').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const orderId = e.target.dataset.orderId;
+                        showOrderDetails(orderId);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading orders:', error);
+            }
+        }
+
+        // Show order details
+        async function showOrderDetails(orderId) {
+            try {
+                const [orderResponse, detailsResponse, totalResponse] = await Promise.all([
+                    axios.get(`/hoadon/${orderId}`),
+                    axios.get(`/hoadon/chitiet/${orderId}`),
+                    axios.get(`/hoadon/tong/${orderId}`)
+                ]);
+
+                const order = orderResponse.data.result;
+                const details = detailsResponse.data.result;
+                const total = totalResponse.data.result;
+
+                const orderDetails = document.getElementById('orderDetails');
+                const orderActions = document.getElementById('orderActions');
+
+                orderDetails.innerHTML = `
+                    <div class="mb-4">
+                        <h6>Thông tin khách hàng:</h6>
+                        <p>
+                            <strong>Tên:</strong> ${order.userKHResponse.firstName} ${order.userKHResponse.lastName}<br>
+                            <strong>SĐT:</strong> ${order.userKHResponse.sdt}<br>
+                            <strong>Ngày đặt:</strong> ${formatDate(order.ngayTao)}
+                        </p>
+                    </div>
+                    <div class="mb-4">
+                        <h6>Chi tiết đơn hàng:</h6>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Số lượng</th>
+                                        <th>Đơn giá</th>
+                                        <th>Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${details.map(detail => `
+                                        <tr>
+                                            <td>${detail.tonKhoResponse.tenSP}</td>
+                                            <td>${detail.soLuong}</td>
+                                            <td>${detail.tonKhoResponse.giaSP} VNĐ</td>
+                                            <td>${detail.tonKhoResponse.giaSP * detail.soLuong} VNĐ</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+                                        <td><strong>${total} VNĐ</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                `;
+
+                orderActions.innerHTML = '';
+                if (order.status === 'processing') {
+                    orderActions.innerHTML = `
+                        <button type="button" class="btn btn-success accept-order" data-order-id="${order.maHD}">
+                            <i class="fas fa-check me-2"></i>Nhận đơn
+                        </button>
+                        <button type="button" class="btn btn-danger cancel-order" data-order-id="${order.maHD}">
+                            <i class="fas fa-times me-2"></i>Hủy đơn
+                        </button>
+                    `;
+                } else if (order.status === 'accepted') {
+                    orderActions.innerHTML = `
+                        <button type="button" class="btn btn-success complete-order" data-order-id="${order.maHD}">
+                            <i class="fas fa-check-double me-2"></i>Hoàn thành
+                        </button>
+                    `;
+                }
+
+                // Add action handlers
+                const modal = new bootstrap.Modal(document.getElementById('orderDetailsModal'));
+                modal.show();
+
+                document.querySelector('.accept-order')?.addEventListener('click', async (e) => {
+                    try {
+                        await axios.post('/hoadon/settrangthai', {
+                            userNV: currentUser.id,
+                            maHD: e.target.dataset.orderId,
+                            status: 'accepted'
+                        });
+                        modal.hide();
+                        loadOrders();
+                    } catch (error) {
+                        console.error('Error accepting order:', error);
+                        alert('Có lỗi xảy ra khi nhận đơn');
+                    }
+                });
+
+                document.querySelector('.complete-order')?.addEventListener('click', async (e) => {
+                    try {
+                        await axios.post('/hoadon/settrangthai', {
+                            userNV: currentUser.id,
+                            maHD: e.target.dataset.orderId,
+                            status: 'completed'
+                        });
+                        modal.hide();
+                        loadOrders();
+                    } catch (error) {
+                        console.error('Error completing order:', error);
+                        alert('Có lỗi xảy ra khi hoàn thành đơn');
+                    }
+                });
+
+                document.querySelector('.cancel-order')?.addEventListener('click', async (e) => {
+                    if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
+                        try {
+                            await axios.post('/hoadon/settrangthai', {
+                                userNV: currentUser.id,
+                                maHD: e.target.dataset.orderId,
+                                status: 'cancelled'
+                            });
+                            modal.hide();
+                            loadOrders();
+                        } catch (error) {
+                            console.error('Error cancelling order:', error);
+                            alert('Có lỗi xảy ra khi hủy đơn');
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading order details:', error);
+            }
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if (!link.id) {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    currentStatus = link.dataset.status;
+                    loadOrders();
+                });
+            }
+        });
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await axios.post('/auth/logout', {
+                    token: localStorage.getItem('token')
+                });
+            } catch (error) {
+                console.error('Error logging out:', error);
+            } finally {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
+        });
+
+        // Initialize
+        async function init() {
+            await loadUserInfo();
+            await loadOrders();
+        }
+
+        init();
+    </script>
+</body>
+</html> 

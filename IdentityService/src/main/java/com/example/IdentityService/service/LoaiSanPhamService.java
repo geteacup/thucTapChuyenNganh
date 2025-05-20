@@ -33,6 +33,11 @@ public class LoaiSanPhamService {
                 loaiSanPhams.stream().map(nhaCungCap -> loaiSanPhamMapper.toLoaiSanPhamResponse(nhaCungCap)).toList();
         return loaiSanPhamResponses;
     }
+    public LoaiSanPhamResponse getLoaiSanPhamById(String maLoai) {
+        LoaiSanPham loaiSanPham = loaiSanPhamRepository.findById(maLoai)
+                .orElseThrow(()->new RuntimeException("not found"));
+        return loaiSanPhamMapper.toLoaiSanPhamResponse(loaiSanPham);
+    }
 
     public LoaiSanPhamResponse createLoaiSanPham(LoaiSanPhamRequest loaiSanPhamRequest) {
         LoaiSanPham loaiSanPham = loaiSanPhamMapper.toLoaiSanPham(loaiSanPhamRequest);
@@ -45,7 +50,7 @@ public class LoaiSanPhamService {
     public LoaiSanPhamResponse updateLoaiSanPham(String maLoai, LoaiSanPhamRequest loaiSanPhamRequest) {
         LoaiSanPham loaiSanPham = loaiSanPhamRepository.findById(maLoai)
                 .orElseThrow(() -> new RuntimeException("khong tim thay"));
-        loaiSanPham = loaiSanPhamMapper.toLoaiSanPham(loaiSanPhamRequest);
+        loaiSanPhamMapper.updateLoaiSanPham(loaiSanPham, loaiSanPhamRequest);
         loaiSanPhamRepository.save(loaiSanPham);
         return loaiSanPhamMapper.toLoaiSanPhamResponse(loaiSanPham);
     }

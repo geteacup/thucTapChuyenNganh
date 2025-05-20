@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class HoaDonRequest {
-    String maHD;
     String userKH;
     String userNV;
     String status;

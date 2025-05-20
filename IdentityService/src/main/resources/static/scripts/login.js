@@ -15,11 +15,27 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
             const data = await response.json();
             const token = data.result.token;
-
             localStorage.setItem("access_token", token);
-
-            alert("Đăng nhập thành công!");
-            window.location.href = "/identity/home/success";
+            fetch('/identity/home/success', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem("access_token")
+                }
+            })
+                .then(res => {
+                    if (res.redirected) {
+                        // Nếu server trả về redirect (ví dụ 302)
+                        window.location.href = res.url;
+                    } else {
+                        return res.text();
+                    }
+                })
+                .then(html => {
+                    // Hiển thị HTML trả về (nếu không redirect)
+                    document.open();
+                    document.write(html);
+                    document.close();
+                });
         } else {
             alert("Đăng nhập thất bại!");
         }

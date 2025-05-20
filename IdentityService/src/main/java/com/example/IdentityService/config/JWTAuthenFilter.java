@@ -32,13 +32,6 @@
 //    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, ServletException, IOException {
 //
 //
-//        for (String url : PUBLIC_ENDPOINTS) {
-//
-//            if (request.getRequestURI().equals(url)) {
-//                filterChain.doFilter(request, response);
-//                return;
-//            }
-//        }
 //            String authHeader = request.getHeader("Authorization");
 //
 //

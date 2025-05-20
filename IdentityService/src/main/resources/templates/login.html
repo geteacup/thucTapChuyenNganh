@@ -1,62 +1,137 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Đăng nhập</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #0061f2 0%, #6900f2 100%);
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        .card-body {
+            padding: 3rem;
+        }
+        .btn-primary {
+            background: #0061f2;
+            border: none;
+            padding: 0.75rem;
+        }
+        .btn-primary:hover {
+            background: #0052cc;
+        }
+        .form-control {
+            padding: 0.75rem;
+        }
+    </style>
 </head>
-<body>
-    <form id="loginForm">
-        <label>Tài khoản</label>
-        <input type="text" id="username">
-        <label>Mật khẩu</label>
-        <input type="text" id="password">
-        <input type="submit" value="Đăng nhập">
-    </form>
+<body class="login-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="text-center mb-4">Đăng nhập</h2>
+                        <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Tên đăng nhập</label>
+                                <input type="text" class="form-control" id="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Mật khẩu</label>
+                                <input type="password" class="form-control" id="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mb-3">Đăng nhập</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <script>document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("loginForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script th:inline="javascript">
+        // Setup axios interceptors
+        axios.interceptors.request.use(
+            (config) => {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+                return config;
+            },
+            (error) => {
+                return Promise.reject(error);
+            }
+        );
 
-            const response = await fetch("/identity/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({username, password})
-            });
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorMessage = document.getElementById('errorMessage');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
 
-            if (response.ok) {
-                const data = await response.json();
-                const token = data.result.token;
-                localStorage.setItem("access_token", token);
-                fetch('/identity/home/success', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem("access_token")
-                    }
-                })
-                    .then(res => {
-                        if (res.redirected) {
-                            // Nếu server trả về redirect (ví dụ 302)
-                            window.location.href = res.url;
-                        } else {
-                            return res.text();
+            try {
+                // Clear any existing tokens
+                localStorage.removeItem('token');
+                localStorage.removeItem('userId');
+
+                // Step 1: Login to get token
+                const loginResponse = await axios.post('/auth/login', {
+                    username: username,
+                    password: password
+                });
+
+                if (loginResponse.data.result && loginResponse.data.result.token) {
+                    const token = loginResponse.data.result.token;
+                    localStorage.setItem('token', token);
+
+                    try {
+                        // Step 2: Get user info with token
+                        const userResponse = await axios.get('/users/myInfo');
+                        const user = userResponse.data.result;
+                        
+                        if (user && user.id) {
+                            localStorage.setItem('userId', user.id);
                         }
-                    })
-                    .then(html => {
-                        // Hiển thị HTML trả về (nếu không redirect)
-                        document.open();
-                        document.write(html);
-                        document.close();
-                    });
-            } else {
-                alert("Đăng nhập thất bại!");
+                        
+                        // Step 3: Redirect based on role
+                        const roles = user.roles || [];
+                        if (roles.some(role => role.roleName === 'ADMIN')) {
+                            window.location.href = '/admin';
+                        } else if (roles.some(role => role.roleName === 'STAFF')) {
+                            window.location.href = '/staff';
+                        } else {
+                            window.location.href = '/home';
+                        }
+                    } catch (error) {
+                        console.error('Error checking user role:', error);
+                        errorMessage.textContent = 'Có lỗi xảy ra khi kiểm tra quyền truy cập';
+                        errorMessage.style.display = 'block';
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userId');
+                    }
+                } else {
+                    errorMessage.textContent = 'Đăng nhập không thành công';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMessage.textContent = error.response?.data?.message || 'Có lỗi xảy ra khi đăng nhập';
+                errorMessage.style.display = 'block';
+                localStorage.removeItem('token');
+                localStorage.removeItem('userId');
             }
         });
-    });
     </script>
 </body>
 </html>

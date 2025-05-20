@@ -27,10 +27,15 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class SecurityConfig  {
 
     private final String[] PUBLIC_POST_ENDPOINTS = {
-            "/auth/login", "/auth/introspect", "/users", "/auth/logout", "/auth/refresh","/home","/identity/images/**"
+            "/auth/login", "/auth/introspect", "/users", "/auth/logout", "/auth/refresh", "/home"
+            ,"/staff","/admin"
     };
     private final String[] PUBLIC_GET_ENDPOINTS = {
-            "/home","/","/home/login","/tonkho","/images"
+            "/home", "/", "/login", "/home/login",
+            "/tonkho", "/images/**", "/scripts/**", "/styles/**", "/css/**",
+            "/tonkho/loaisanpham/**", "/tonkho/nhacungcap/**",
+            "/nhacungcap", "/loaisanpham", "/users/myInfo",
+            "/webjars/**", "/js/**", "/error","/admin","/staff"
     };
 
 
@@ -52,7 +57,9 @@ public class SecurityConfig  {
         return (web) -> web.ignoring().requestMatchers(
                 new AntPathRequestMatcher("/css/**"),
                 new AntPathRequestMatcher("/scripts/**"),
-                new AntPathRequestMatcher("/images/**")
+                new AntPathRequestMatcher("/images/**"),
+                new AntPathRequestMatcher("/webjars/**"),
+                new AntPathRequestMatcher("/js/**")
         );
     }
     @Bean
@@ -62,11 +69,20 @@ public class SecurityConfig  {
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 );
+        http.formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/home")
+                .permitAll()
+        );
+        http.logout(logout -> logout
+                .logoutSuccessUrl("/login")
+                .permitAll()
+        );
+
         http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(jwtDecoder)
                         .jwtAuthenticationConverter(jwtConverter()))
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
-
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
         return http.build();
     }

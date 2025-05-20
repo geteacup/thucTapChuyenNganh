@@ -18,7 +18,7 @@ public class TonKho {
     private String anhSP;
     private String tenSP;
     private String motaSP;
-    private String giaSP;
+    private int giaSP;
     private float daiSP;
     private float rongSP;
     private int soLuongSP;
