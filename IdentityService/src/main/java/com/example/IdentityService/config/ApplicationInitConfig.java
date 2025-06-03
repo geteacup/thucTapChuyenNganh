@@ -49,12 +49,7 @@ public class ApplicationInitConfig {
     public void createAdmin() {
         if (userRepository.findByUsername("admin").isEmpty()) {
             // Create ADMIN role if it doesn't exist
-            Role adminRole = roleRepository.findByRoleName("ADMIN")
-                .orElseGet(() -> {
-                    Role newRole = new Role();
-                    newRole.setRoleName("ADMIN");
-                    return roleRepository.save(newRole);
-                });
+            Role adminRole = roleRepository.findByRoleName("ADMIN");
 
             // Create admin user
             User adminUser = User.builder()

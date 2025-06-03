@@ -49,6 +49,9 @@ public class RoleService {
         return roleMapper.toRoleResponse(role);
     }
 
+    public RoleResponse getRoleById(String roleId){
+        return roleMapper.toRoleResponse(roleRepository.findByRoleName(roleId));
+    }
     public RoleResponse updateRole(String roleId, RoleRequest roleRequest) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(()-> new RuntimeException("something went wrong"));

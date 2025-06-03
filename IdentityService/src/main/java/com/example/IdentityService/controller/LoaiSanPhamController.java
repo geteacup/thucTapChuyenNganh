@@ -6,6 +6,7 @@ import com.example.IdentityService.dto.response.LoaiSanPhamResponse;
 import com.example.IdentityService.service.LoaiSanPhamService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,18 +31,21 @@ public class LoaiSanPhamController {
                 .build();
     }
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<LoaiSanPhamResponse> createLoaiSanPham(@RequestBody LoaiSanPhamRequest loaiSanPhamRequest){
         return ApiResponse.<LoaiSanPhamResponse>builder()
                 .result(loaiSanPhamService.createLoaiSanPham(loaiSanPhamRequest))
                 .build();
     }
     @PutMapping("/{maLoai}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<LoaiSanPhamResponse> updateLoaiSanPham(@PathVariable String maLoai , @RequestBody LoaiSanPhamRequest loaiSanPhamRequest){
         return ApiResponse.<LoaiSanPhamResponse>builder()
                 .result(loaiSanPhamService.updateLoaiSanPham(maLoai,loaiSanPhamRequest))
                 .build();
     }
     @DeleteMapping("/{maLoai}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> deleteLoaiSanPham(@PathVariable String maLoai){
         loaiSanPhamService.deleteLoaiSanPham(maLoai);
         return ApiResponse.<String>builder()

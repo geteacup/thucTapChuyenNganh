@@ -8,6 +8,7 @@ import com.example.IdentityService.dto.response.NhaCungCapResponse;
 import com.example.IdentityService.service.NhaCungCapService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,18 +33,21 @@ public class NhaCungCapController {
                 .build();
     }
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<NhaCungCapResponse> createNhaCungCap(@RequestBody NhaCungCapRequest nhaCungCapRequest){
         return ApiResponse.<NhaCungCapResponse>builder()
                 .result(nhacungCapService.createNhaCungCap(nhaCungCapRequest))
                 .build();
     }
     @PutMapping("/{maNCC}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<NhaCungCapResponse> updateNhaCungCap(@PathVariable String maNCC , @RequestBody NhaCungCapRequest nhaCungCapRequest){
         return ApiResponse.<NhaCungCapResponse>builder()
                 .result(nhacungCapService.updateNhaCungCap(maNCC,nhaCungCapRequest))
                 .build();
     }
     @DeleteMapping("/{maNCC}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> deleteNhaCungCap(@PathVariable String maNCC){
         nhacungCapService.deleteNhaCungCap(maNCC);
         return ApiResponse.<String>builder()

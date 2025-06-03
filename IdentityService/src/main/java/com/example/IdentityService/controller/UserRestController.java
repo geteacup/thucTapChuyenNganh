@@ -57,6 +57,7 @@ public class UserRestController {
     }
 
     @GetMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<UserResponse> getUser(@PathVariable String userId) {
 
         return ApiResponse.<UserResponse>builder()
@@ -74,16 +75,19 @@ public class UserRestController {
     }
 
     @PutMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponse updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
         return userService.updateUser(userId, request);
     }
 
     @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
     }
 
     @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUsers() {
         userService.deleteUsers();
     }

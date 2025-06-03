@@ -1,6 +1,8 @@
 package com.example.IdentityService.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -12,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
+@Slf4j
 public class HomeController {
 
     @GetMapping("/")
@@ -28,39 +31,17 @@ public class HomeController {
     public String home() {
         return "home";
     }
-
-    @PostMapping("/admin")
-    public ModelAndView adminPost(@RequestParam("token") String token, HttpServletRequest request) {
-        ModelAndView modelAndView = new ModelAndView("admin");
-        // Lưu token vào session
-        HttpSession session = request.getSession();
-        session.setAttribute("token", token);
-        return modelAndView;
-    }
-
     @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
     public String admin() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated()) {
-            return "admin";
-        }
-        return "redirect:/login";
+        log.info(""+auth.getAuthorities());
+                return "admin";
     }
-
-    @PostMapping("/staff")
-    public ModelAndView staffPost(@RequestParam("token") String token, HttpServletRequest request) {
-        ModelAndView modelAndView = new ModelAndView("staff");
-        HttpSession session = request.getSession();
-        session.setAttribute("token", token);
-        return modelAndView;
-    }
-
     @GetMapping("/staff")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public String staff() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated()) {
-            return "staff";
-        }
-        return "redirect:/login";
+                return "staff";
     }
 }

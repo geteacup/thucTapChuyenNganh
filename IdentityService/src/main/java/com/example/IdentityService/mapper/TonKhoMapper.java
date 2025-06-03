@@ -3,9 +3,7 @@ package com.example.IdentityService.mapper;
 import com.example.IdentityService.dto.request.TonKhoRequest;
 import com.example.IdentityService.dto.response.TonKhoResponse;
 import com.example.IdentityService.entity.TonKho;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface TonKhoMapper {
@@ -14,6 +12,7 @@ public interface TonKhoMapper {
     TonKho toTonKho(TonKhoRequest tonKhoRequest);
     @Mapping(target = "loaiSanPham", ignore = true)
     @Mapping(target = "nhaCungCap", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateTonKho(TonKhoRequest tonKhoRequest,@MappingTarget TonKho tonKho);
     TonKhoResponse toTonKhoResponse(TonKho tonKho);
 }

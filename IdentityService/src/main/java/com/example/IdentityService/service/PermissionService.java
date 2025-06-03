@@ -41,6 +41,9 @@ public class PermissionService {
         return permissionMapper.toPermissionResponse(permission);
     }
 
+    public PermissionResponse getById(String permissionID) {
+        return permissionMapper.toPermissionResponse(permissionRepository.findByPermissionName(permissionID));
+    }
     public void delete(String id) {
         permissionRepository.deleteById(id);
     }

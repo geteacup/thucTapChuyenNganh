@@ -12,6 +12,7 @@ import com.example.IdentityService.service.ChiTietHoaDonService;
 import com.example.IdentityService.service.HoaDonService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class HoaDonController {
     ChiTietGioHangService chiTietGioHangService;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ApiResponse<List<HoaDonResponse>> getAllHoadon() {
         return ApiResponse.<List<HoaDonResponse>>builder()
                 .result(hoaDonService.getAllHoaDon())
@@ -54,6 +56,7 @@ public class HoaDonController {
                 .build();
     }
     @PostMapping("/settrangthai")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ApiResponse<String> settrangthai(@RequestBody TrangThaiHoaDonRequest request) {
         hoaDonService.changeStatus(request);
 
@@ -63,12 +66,14 @@ public class HoaDonController {
     }
 
     @GetMapping("/processing")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ApiResponse<List<HoaDonResponse>> getAllProcessingHoaDon(){
         return ApiResponse.<List<HoaDonResponse>>builder()
                 .result(hoaDonService.getAllHoaDonByStatus("processing"))
                 .build();
     }
     @GetMapping("/status/{status}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ApiResponse<List<HoaDonResponse>> getAllAcceptedHoaDon(@PathVariable String status){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
@@ -95,6 +100,7 @@ public class HoaDonController {
                 .build();
     }
     @GetMapping("/staff/{userID}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ApiResponse<List<HoaDonResponse>> hoaDonByUserNV(@PathVariable("userID") String userID) {
         return ApiResponse.<List<HoaDonResponse>>builder()
                 .result(hoaDonService.getAllHoaDonByUserNV(userID))

@@ -1,8 +1,6 @@
 package com.example.IdentityService.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 import com.example.IdentityService.dto.request.UserCreationRequest;
 import com.example.IdentityService.dto.request.UserUpdateRequest;
@@ -18,5 +16,6 @@ public interface UserMapper {
     UserResponse toUserResponse(User user);
 
     @Mapping(target = "roles", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUser(@MappingTarget User user, UserUpdateRequest userUpdateRequest);
 }

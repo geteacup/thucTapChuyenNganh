@@ -7,23 +7,125 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #858796;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f8f9fc;
+        }
+
         .sidebar {
             min-height: 100vh;
-            background: #4e73df;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
             color: white;
+            padding: 1rem;
         }
+
         .nav-link {
-            color: rgba(255,255,255,.8);
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 10rem;
+            transition: all 0.3s ease;
         }
-        .nav-link:hover {
-            color: white;
+
+        .nav-link:hover, .nav-link.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.1);
         }
-        .nav-link.active {
-            color: white;
-            background: rgba(255,255,255,.1);
+
+        .nav-link i {
+            margin-right: 0.5rem;
         }
+
         .content {
-            padding: 20px;
+            padding: 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .btn {
+            border-radius: 10rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        .modal-content {
+            border: none;
+            border-radius: 1rem;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+            color: white;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            font-weight: 700;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            border-top: none;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .form-control, .form-select {
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d3e2;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
         }
     </style>
 </head>
@@ -31,29 +133,29 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-2 sidebar p-3">
+            <div class="col-md-2 sidebar">
                 <h4 class="mb-4">Admin Dashboard</h4>
                 <div class="nav flex-column">
                     <a class="nav-link active" href="#" data-target="categories">
-                        <i class="fas fa-list me-2"></i>Loại sản phẩm
+                        <i class="fas fa-list"></i>Loại sản phẩm
                     </a>
                     <a class="nav-link" href="#" data-target="suppliers">
-                        <i class="fas fa-truck me-2"></i>Nhà cung cấp
+                        <i class="fas fa-truck"></i>Nhà cung cấp
                     </a>
                     <a class="nav-link" href="#" data-target="products">
-                        <i class="fas fa-box me-2"></i>Sản phẩm
+                        <i class="fas fa-box"></i>Sản phẩm
                     </a>
                     <a class="nav-link" href="#" data-target="users">
-                        <i class="fas fa-users me-2"></i>Users
+                        <i class="fas fa-users"></i>Users
                     </a>
                     <a class="nav-link" href="#" data-target="roles">
-                        <i class="fas fa-user-tag me-2"></i>Roles
+                        <i class="fas fa-user-tag"></i>Roles
                     </a>
                     <a class="nav-link" href="#" data-target="permissions">
-                        <i class="fas fa-key me-2"></i>Permissions
+                        <i class="fas fa-key"></i>Permissions
                     </a>
                     <a class="nav-link text-danger" href="#" id="logoutBtn">
-                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                        <i class="fas fa-sign-out-alt"></i>Đăng xuất
                     </a>
                 </div>
             </div>
@@ -65,7 +167,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Quản lý Loại sản phẩm</h2>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#categoryModal">
-                            <i class="fas fa-plus me-2"></i>Thêm mới
+                            <i class="fas fa-plus"></i>Thêm mới
                         </button>
                     </div>
                     <div class="table-responsive">
@@ -74,6 +176,7 @@
                                 <tr>
                                     <th>Mã loại</th>
                                     <th>Tên loại</th>
+                                    <th>Mô tả</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -87,7 +190,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Quản lý Nhà cung cấp</h2>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#supplierModal">
-                            <i class="fas fa-plus me-2"></i>Thêm mới
+                            <i class="fas fa-plus"></i>Thêm mới
                         </button>
                     </div>
                     <div class="table-responsive">
@@ -96,8 +199,7 @@
                                 <tr>
                                     <th>Mã NCC</th>
                                     <th>Tên NCC</th>
-                                    <th>Địa chỉ</th>
-                                    <th>Số điện thoại</th>
+                                    <th>Mô tả</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -111,7 +213,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Quản lý Sản phẩm</h2>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
-                            <i class="fas fa-plus me-2"></i>Thêm mới
+                            <i class="fas fa-plus"></i>Thêm mới
                         </button>
                     </div>
                     <div class="table-responsive">
@@ -137,17 +239,19 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Quản lý Users</h2>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal">
-                            <i class="fas fa-plus me-2"></i>Thêm mới
+                            <i class="fas fa-plus"></i>Thêm mới
                         </button>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Username</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
+                                    <th>Họ</th>
+                                    <th>Tên</th>
+                                    <th>Ngày sinh</th>
+                                    <th>SĐT</th>
+                                    <th>Roles</th>
                                     <th>Thao tác</th>
                                 </tr>
                             </thead>
@@ -161,7 +265,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Quản lý Roles</h2>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#roleModal">
-                            <i class="fas fa-plus me-2"></i>Thêm mới
+                            <i class="fas fa-plus"></i>Thêm mới
                         </button>
                     </div>
                     <div class="table-responsive">
@@ -184,14 +288,13 @@
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h2>Quản lý Permissions</h2>
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#permissionModal">
-                            <i class="fas fa-plus me-2"></i>Thêm mới
+                            <i class="fas fa-plus"></i>Thêm mới
                         </button>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Permission Name</th>
                                     <th>Description</th>
                                     <th>Thao tác</th>
@@ -205,21 +308,29 @@
         </div>
     </div>
 
-    <!-- Modals for CRUD operations -->
+    <!-- Modals -->
     <!-- Category Modal -->
     <div class="modal fade" id="categoryModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Loại sản phẩm</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="categoryForm">
                         <input type="hidden" id="categoryId">
                         <div class="mb-3">
+                            <label class="form-label">Mã loại</label>
+                            <input type="text" class="form-control" id="maLoai" required>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Tên loại</label>
-                            <input type="text" class="form-control" id="categoryName" required>
+                            <input type="text" class="form-control" id="tenLoai" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="motaLoai" rows="3"></textarea>
                         </div>
                     </form>
                 </div>
@@ -237,22 +348,22 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Nhà cung cấp</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="supplierForm">
                         <input type="hidden" id="supplierId">
                         <div class="mb-3">
-                            <label class="form-label">Tên nhà cung cấp</label>
-                            <input type="text" class="form-control" id="supplierName" required>
+                            <label class="form-label">Mã NCC</label>
+                            <input type="text" class="form-control" id="maNCC" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Địa chỉ</label>
-                            <input type="text" class="form-control" id="supplierAddress" required>
+                            <label class="form-label">Tên NCC</label>
+                            <input type="text" class="form-control" id="tenNCC" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Số điện thoại</label>
-                            <input type="text" class="form-control" id="supplierPhone" required>
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="motaNCC" rows="3"></textarea>
                         </div>
                     </form>
                 </div>
@@ -266,38 +377,61 @@
 
     <!-- Product Modal -->
     <div class="modal fade" id="productModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Sản phẩm</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="productForm">
                         <input type="hidden" id="productId">
                         <div class="mb-3">
+                            <label class="form-label">Mã sản phẩm</label>
+                            <input type="text" class="form-control" id="maSP" required>
+                        </div>
+                        <div class="mb-3">
                             <label class="form-label">Tên sản phẩm</label>
-                            <input type="text" class="form-control" id="productName" required>
+                            <input type="text" class="form-control" id="tenSP" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Giá</label>
-                            <input type="number" class="form-control" id="productPrice" required>
+                            <label class="form-label">Mô tả</label>
+                            <textarea class="form-control" id="motaSP" rows="3"></textarea>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Số lượng</label>
-                            <input type="number" class="form-control" id="productQuantity" required>
+                            <label class="form-label">Giá bán (VNĐ)</label>
+                            <input type="number" class="form-control" id="giaSP" min="0" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Chiều dài (cm)</label>
+                                    <input type="number" class="form-control" id="daiSP" min="0" step="0.1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Chiều rộng (cm)</label>
+                                    <input type="number" class="form-control" id="rongSP" min="0" step="0.1" required>
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Loại sản phẩm</label>
-                            <select class="form-control" id="productCategory" required></select>
+                            <select class="form-select" id="loaiSanPham" required>
+                                <option value="">Chọn loại sản phẩm...</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Nhà cung cấp</label>
-                            <select class="form-control" id="productSupplier" required></select>
+                            <select class="form-select" id="nhaCungCap" required>
+                                <option value="">Chọn nhà cung cấp...</option>
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Hình ảnh</label>
-                            <input type="file" class="form-control" id="productImage" accept="image/*">
+                            <input type="file" class="form-control" id="anhSP" accept="image/*">
+                            <small class="text-muted">Để trống nếu không muốn thay đổi ảnh khi chỉnh sửa</small>
                         </div>
                     </form>
                 </div>
@@ -315,7 +449,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="userForm">
@@ -325,17 +459,30 @@
                             <input type="text" class="form-control" id="username" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="userEmail" required>
-                        </div>
-                        <div class="mb-3">
                             <label class="form-label">Password</label>
-                            <input type="password" class="form-control" id="userPassword">
+                            <input type="password" class="form-control" id="password">
                             <small class="text-muted">Leave blank to keep current password when editing</small>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Role</label>
-                            <select class="form-control" id="userRole" required></select>
+                            <label class="form-label">Họ</label>
+                            <input type="text" class="form-control" id="firstName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tên</label>
+                            <input type="text" class="form-control" id="lastName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" class="form-control" id="birthDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">SĐT</label>
+                            <input type="text" class="form-control" id="sdt" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Roles</label>
+                            <div id="roleCheckboxes" class="form-check">
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -353,7 +500,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Role</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="roleForm">
@@ -368,7 +515,8 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Permissions</label>
-                            <div id="permissionCheckboxes" class="form-check"></div>
+                            <div id="permissionCheckboxes" class="form-check">
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -386,7 +534,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Permission</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="permissionForm">
@@ -411,6 +559,908 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/js/admin.js"></script>
+    <script th:inline="javascript">
+        // Setup axios interceptor
+        axios.interceptors.request.use(
+            (config) => {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+                return config;
+            },
+            (error) => {
+                return Promise.reject(error);
+            }
+        );
+
+        // Handle unauthorized responses
+        axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            if (!link.id) {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    document.querySelectorAll('.section').forEach(s => s.classList.add('d-none'));
+                    document.getElementById(link.dataset.target).classList.remove('d-none');
+                });
+            }
+        });
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await axios.post('/auth/logout', {
+                    token: localStorage.getItem('token')
+                });
+            } catch (error) {
+                console.error('Error logging out:', error);
+            } finally {
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
+        });
+
+        // Initialize
+        async function init() {
+            await loadCategories();
+            await loadSuppliers();
+            await loadProducts();
+            await loadUsers();
+            await loadRoles();
+            await loadPermissions();
+            // Load initial data for forms
+            await loadCategoriesForProduct();
+            await loadSuppliersForProduct();
+            await loadRolesForUser();
+            await loadPermissionsForRole();
+        }
+
+        // Load categories for product form
+        async function loadCategoriesForProduct() {
+            try {
+                const response = await axios.get('/loaisanpham');
+                const categories = response.data.result;
+                const categorySelect = document.getElementById('loaiSanPham');
+                
+                categorySelect.innerHTML = '<option value="">Chọn loại sản phẩm...</option>' + 
+                    categories.map(category => `
+                        <option value="${category.maLoai}">${category.tenLoai}</option>
+                    `).join('');
+            } catch (error) {
+                console.error('Error loading categories for product form:', error);
+            }
+        }
+
+        // Load suppliers for product form
+        async function loadSuppliersForProduct() {
+            try {
+                const response = await axios.get('/nhacungcap');
+                const suppliers = response.data.result;
+                const supplierSelect = document.getElementById('nhaCungCap');
+                
+                supplierSelect.innerHTML = '<option value="">Chọn nhà cung cấp...</option>' + 
+                    suppliers.map(supplier => `
+                        <option value="${supplier.maNCC}">${supplier.tenNCC}</option>
+                    `).join('');
+            } catch (error) {
+                console.error('Error loading suppliers for product form:', error);
+            }
+        }
+
+        // Category Management
+        async function loadCategories() {
+            try {
+                const response = await axios.get('/loaisanpham');
+                const categories = response.data.result;
+                const categoryTable = document.getElementById('categoryTable');
+                
+                categoryTable.innerHTML = categories.map(category => `
+                    <tr>
+                        <td>${category.maLoai}</td>
+                        <td>${category.tenLoai}</td>
+                        <td>${category.motaLoai || ''}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-category" data-id="${category.maLoai}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-category" data-id="${category.maLoai}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Add event listeners
+                document.querySelectorAll('.edit-category').forEach(button => {
+                    button.addEventListener('click', () => editCategory(button.dataset.id));
+                });
+
+                document.querySelectorAll('.delete-category').forEach(button => {
+                    button.addEventListener('click', () => deleteCategory(button.dataset.id));
+                });
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                alert('Có lỗi xảy ra khi tải danh sách loại sản phẩm');
+            }
+        }
+
+        async function editCategory(categoryId) {
+            try {
+                const response = await axios.get(`/loaisanpham/${categoryId}`);
+                const category = response.data.result;
+
+                document.getElementById('categoryId').value = category.maLoai;
+                document.getElementById('maLoai').value = category.maLoai;
+                document.getElementById('maLoai').disabled = true;
+                document.getElementById('tenLoai').value = category.tenLoai;
+                document.getElementById('motaLoai').value = category.motaLoai || '';
+
+                const categoryModal = new bootstrap.Modal(document.getElementById('categoryModal'));
+                categoryModal.show();
+            } catch (error) {
+                console.error('Error loading category details:', error);
+                alert('Có lỗi xảy ra khi tải thông tin loại sản phẩm');
+            }
+        }
+
+        async function deleteCategory(categoryId) {
+            if (confirm('Bạn có chắc muốn xóa loại sản phẩm này?')) {
+                try {
+                    await axios.delete(`/loaisanpham/${categoryId}`);
+                    loadCategories();
+                } catch (error) {
+                    console.error('Error deleting category:', error);
+                    alert('Có lỗi xảy ra khi xóa loại sản phẩm');
+                }
+            }
+        }
+
+        document.getElementById('saveCategoryBtn').addEventListener('click', async () => {
+            const form = document.getElementById('categoryForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            try {
+                const categoryId = document.getElementById('categoryId').value;
+                const categoryData = {
+                    maLoai: document.getElementById('maLoai').value,
+                    tenLoai: document.getElementById('tenLoai').value,
+                    motaLoai: document.getElementById('motaLoai').value
+                };
+
+                if (categoryId) {
+                    await axios.put(`/loaisanpham/${categoryId}`, categoryData);
+                } else {
+                    await axios.post('/loaisanpham', categoryData);
+                }
+
+                const categoryModal = bootstrap.Modal.getInstance(document.getElementById('categoryModal'));
+                categoryModal.hide();
+                loadCategories();
+                form.reset();
+            } catch (error) {
+                console.error('Error saving category:', error);
+                alert('Có lỗi xảy ra khi lưu loại sản phẩm');
+            }
+        });
+
+        // Supplier Management
+        async function loadSuppliers() {
+            try {
+                const response = await axios.get('/nhacungcap');
+                const suppliers = response.data.result;
+                const supplierTable = document.getElementById('supplierTable');
+                
+                supplierTable.innerHTML = suppliers.map(supplier => `
+                    <tr>
+                        <td>${supplier.maNCC}</td>
+                        <td>${supplier.tenNCC}</td>
+                        <td>${supplier.motaNCC || ''}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-supplier" data-id="${supplier.maNCC}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-supplier" data-id="${supplier.maNCC}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Add event listeners
+                document.querySelectorAll('.edit-supplier').forEach(button => {
+                    button.addEventListener('click', () => editSupplier(button.dataset.id));
+                });
+
+                document.querySelectorAll('.delete-supplier').forEach(button => {
+                    button.addEventListener('click', () => deleteSupplier(button.dataset.id));
+                });
+            } catch (error) {
+                console.error('Error loading suppliers:', error);
+                alert('Có lỗi xảy ra khi tải danh sách nhà cung cấp');
+            }
+        }
+
+        async function editSupplier(supplierId) {
+            try {
+                const response = await axios.get(`/nhacungcap/${supplierId}`);
+                const supplier = response.data.result;
+
+                document.getElementById('supplierId').value = supplier.maNCC;
+                document.getElementById('maNCC').value = supplier.maNCC;
+                document.getElementById('maNCC').disabled = true;
+                document.getElementById('tenNCC').value = supplier.tenNCC;
+                document.getElementById('motaNCC').value = supplier.motaNCC || '';
+
+                const supplierModal = new bootstrap.Modal(document.getElementById('supplierModal'));
+                supplierModal.show();
+            } catch (error) {
+                console.error('Error loading supplier details:', error);
+                alert('Có lỗi xảy ra khi tải thông tin nhà cung cấp');
+            }
+        }
+
+        async function deleteSupplier(supplierId) {
+            if (confirm('Bạn có chắc muốn xóa nhà cung cấp này?')) {
+                try {
+                    await axios.delete(`/nhacungcap/${supplierId}`);
+                    loadSuppliers();
+                } catch (error) {
+                    console.error('Error deleting supplier:', error);
+                    alert('Có lỗi xảy ra khi xóa nhà cung cấp');
+                }
+            }
+        }
+
+        document.getElementById('saveSupplierBtn').addEventListener('click', async () => {
+            const form = document.getElementById('supplierForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            try {
+                const supplierId = document.getElementById('supplierId').value;
+                const supplierData = {
+                    maNCC: document.getElementById('maNCC').value,
+                    tenNCC: document.getElementById('tenNCC').value,
+                    motaNCC: document.getElementById('motaNCC').value
+                };
+
+                if (supplierId) {
+                    await axios.put(`/nhacungcap/${supplierId}`, supplierData);
+                } else {
+                    await axios.post('/nhacungcap', supplierData);
+                }
+
+                const supplierModal = bootstrap.Modal.getInstance(document.getElementById('supplierModal'));
+                supplierModal.hide();
+                loadSuppliers();
+                form.reset();
+            } catch (error) {
+                console.error('Error saving supplier:', error);
+                alert('Có lỗi xảy ra khi lưu nhà cung cấp');
+            }
+        });
+
+        // Product Management
+        async function loadProducts() {
+            try {
+                const response = await axios.get('/tonkho');
+                const products = response.data.result;
+                const productTable = document.getElementById('productTable');
+                
+                productTable.innerHTML = products.map(product => `
+                    <tr>
+                        <td>${product.maSP}</td>
+                        <td>${product.tenSP}</td>
+                        <td>${product.giaSP.toLocaleString('vi-VN')} VNĐ</td>
+                        <td>${product.soLuongSP}</td>
+                        <td>${product.loaiSanPham.tenLoai}</td>
+                        <td>${product.nhaCungCap.tenNCC}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-product" data-id="${product.maSP}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-product" data-id="${product.maSP}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Add event listeners
+                document.querySelectorAll('.edit-product').forEach(button => {
+                    button.addEventListener('click', () => editProduct(button.dataset.id));
+                });
+
+                document.querySelectorAll('.delete-product').forEach(button => {
+                    button.addEventListener('click', () => deleteProduct(button.dataset.id));
+                });
+            } catch (error) {
+                console.error('Error loading products:', error);
+                alert('Có lỗi xảy ra khi tải danh sách sản phẩm');
+            }
+        }
+
+        async function editProduct(productId) {
+            try {
+                const response = await axios.get(`/tonkho/${productId}`);
+                const product = response.data.result;
+
+                document.getElementById('productId').value = product.maSP;
+                document.getElementById('maSP').value = product.maSP;
+                document.getElementById('maSP').disabled = true;
+                document.getElementById('tenSP').value = product.tenSP;
+                document.getElementById('motaSP').value = product.motaSP || '';
+                document.getElementById('giaSP').value = product.giaSP;
+                document.getElementById('daiSP').value = product.daiSP;
+                document.getElementById('rongSP').value = product.rongSP;
+                document.getElementById('loaiSanPham').value = product.loaiSanPham.maLoai;
+                document.getElementById('nhaCungCap').value = product.nhaCungCap.maNCC;
+
+                const productModal = new bootstrap.Modal(document.getElementById('productModal'));
+                productModal.show();
+            } catch (error) {
+                console.error('Error loading product details:', error);
+                alert('Có lỗi xảy ra khi tải thông tin sản phẩm');
+            }
+        }
+
+        async function deleteProduct(productId) {
+            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+                try {
+                    await axios.delete(`/tonkho/${productId}`);
+                    loadProducts();
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    alert('Có lỗi xảy ra khi xóa sản phẩm');
+                }
+            }
+        }
+
+        document.getElementById('saveProductBtn').addEventListener('click', async () => {
+            const form = document.getElementById('productForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            try {
+                const productId = document.getElementById('productId').value;
+                const imageFile = document.getElementById('anhSP').files[0];
+                let imageUrl = null;
+
+                if (imageFile) {
+                    if (!imageFile.type.startsWith('image/')) {
+                        throw new Error('File phải là định dạng hình ảnh');
+                    }
+                    
+                    if (imageFile.size > 5 * 1024 * 1024) {
+                        throw new Error('Kích thước file không được vượt quá 5MB');
+                    }
+
+                    const formData = new FormData();
+                    formData.append('file', imageFile);
+
+                    const uploadResponse = await axios.post('/upload', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    });
+
+                    if (!uploadResponse.data.result || uploadResponse.data.result === 'fail') {
+                        throw new Error('Không thể upload hình ảnh');
+                    }
+
+                    imageUrl = uploadResponse.data.result;
+                }
+
+                const productData = {
+                    maSP: document.getElementById('maSP').value,
+                    tenSP: document.getElementById('tenSP').value,
+                    motaSP: document.getElementById('motaSP').value,
+                    giaSP: parseInt(document.getElementById('giaSP').value),
+                    daiSP: parseFloat(document.getElementById('daiSP').value),
+                    rongSP: parseFloat(document.getElementById('rongSP').value),
+                    loaiSanPham: document.getElementById('loaiSanPham').value,
+                    nhaCungCap: document.getElementById('nhaCungCap').value
+                };
+
+                if (imageUrl) {
+                    productData.anhSP = imageUrl;
+                }
+
+                if (productId) {
+                    await axios.put(`/tonkho/${productId}`, productData);
+                } else {
+                    await axios.post('/tonkho', productData);
+                }
+
+                const productModal = bootstrap.Modal.getInstance(document.getElementById('productModal'));
+                productModal.hide();
+                loadProducts();
+                form.reset();
+            } catch (error) {
+                console.error('Error saving product:', error);
+                alert(error.message || 'Có lỗi xảy ra khi lưu sản phẩm');
+            }
+        });
+
+        // User Management
+        async function loadUsers() {
+            try {
+                const response = await axios.get('/users');
+                const users = response.data.result;
+                const userTable = document.getElementById('userTable');
+                
+                userTable.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.username}</td>
+                        <td>${user.firstName}</td>
+                        <td>${user.lastName}</td>
+                        <td>${new Date(user.birthDate).toLocaleDateString('vi-VN')}</td>
+                        <td>${user.sdt}</td>
+                        <td>${user.roles.map(role => role.roleName).join(', ')}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-user" data-id="${user.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-user" data-id="${user.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Add event listeners
+                document.querySelectorAll('.edit-user').forEach(button => {
+                    button.addEventListener('click', () => editUser(button.dataset.id));
+                });
+
+                document.querySelectorAll('.delete-user').forEach(button => {
+                    button.addEventListener('click', () => deleteUser(button.dataset.id));
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+                alert('Có lỗi xảy ra khi tải danh sách users');
+            }
+        }
+
+        async function editUser(userId) {
+            try {
+                const response = await axios.get(`/users/${userId}`);
+                const user = response.data.result;
+
+                document.getElementById('userId').value = user.id;
+                document.getElementById('username').value = user.username;
+                document.getElementById('username').disabled = true;
+                document.getElementById('firstName').value = user.firstName;
+                document.getElementById('lastName').value = user.lastName;
+                document.getElementById('birthDate').value = user.birthDate.split('T')[0];
+                document.getElementById('sdt').value = user.sdt;
+
+                // Load roles for selection
+                const rolesResponse = await axios.get('/roles');
+                const roles = rolesResponse.data.result;
+                const roleCheckboxes = document.getElementById('roleCheckboxes');
+                
+                roleCheckboxes.innerHTML = roles.map(role => `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${role.roleName}" 
+                            id="role_${role.roleName}" 
+                            ${user.roles && user.roles.some(r => r.roleName === role.roleName) ? 'checked' : ''}>
+                        <label class="form-check-label" for="role_${role.roleName}">
+                            ${role.roleName}
+                        </label>
+                    </div>
+                `).join('');
+
+                const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+                userModal.show();
+            } catch (error) {
+                console.error('Error loading user details:', error);
+                alert('Có lỗi xảy ra khi tải thông tin user');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (confirm('Bạn có chắc muốn xóa user này?')) {
+                try {
+                    await axios.delete(`/users/${userId}`);
+                    loadUsers();
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    alert('Có lỗi xảy ra khi xóa user');
+                }
+            }
+        }
+
+        document.getElementById('saveUserBtn').addEventListener('click', async () => {
+            const form = document.getElementById('userForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            try {
+                const userId = document.getElementById('userId').value;
+                const selectedRoles = Array.from(document.querySelectorAll('#roleCheckboxes input:checked'))
+                    .map(checkbox => checkbox.value);
+
+                const userData = {
+                    username: document.getElementById('username').value,
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    birthDate: document.getElementById('birthDate').value,
+                    sdt: document.getElementById('sdt').value,
+                    roles: selectedRoles || []
+                };
+
+                const password = document.getElementById('password').value;
+                if (password) {
+                    userData.password = password;
+                }
+
+                if (userId) {
+                    await axios.put(`/users/${userId}`, userData);
+                } else {
+                    await axios.post('/users', userData);
+                }
+
+                const userModal = bootstrap.Modal.getInstance(document.getElementById('userModal'));
+                userModal.hide();
+                loadUsers();
+                form.reset();
+            } catch (error) {
+                console.error('Error saving user:', error);
+                alert('Có lỗi xảy ra khi lưu user');
+            }
+        });
+
+        // Role Management
+        async function loadRoles() {
+            try {
+                const response = await axios.get('/roles');
+                const roles = response.data.result;
+                const roleTable = document.getElementById('roleTable');
+                
+                roleTable.innerHTML = roles.map(role => `
+                    <tr>
+                        <td>${role.roleName}</td>
+                        <td>${role.description || ''}</td>
+                        <td>${role.permissionSet.map(p => p.permissionName).join(', ')}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-role" data-id="${role.roleName}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-role" data-id="${role.roleName}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Add event listeners
+                document.querySelectorAll('.edit-role').forEach(button => {
+                    button.addEventListener('click', () => editRole(button.dataset.id));
+                });
+
+                document.querySelectorAll('.delete-role').forEach(button => {
+                    button.addEventListener('click', () => deleteRole(button.dataset.id));
+                });
+            } catch (error) {
+                console.error('Error loading roles:', error);
+                alert('Có lỗi xảy ra khi tải danh sách roles');
+            }
+        }
+
+        async function editRole(roleName) {
+            try {
+                const response = await axios.get(`/roles/${roleName}`);
+                const role = response.data.result;
+
+                document.getElementById('roleId').value = role.roleName;
+                document.getElementById('roleName').value = role.roleName;
+                document.getElementById('roleName').disabled = true;
+                document.getElementById('roleDescription').value = role.description || '';
+
+                // Load permissions for selection
+                const permissionsResponse = await axios.get('/permissions');
+                const permissions = permissionsResponse.data.result;
+                const permissionCheckboxes = document.getElementById('permissionCheckboxes');
+                
+                permissionCheckboxes.innerHTML = permissions.map(permission => `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${permission.permissionName}" 
+                            id="permission_${permission.permissionName}" 
+                            ${role.permissionSet && role.permissionSet.some(p => p.permissionName === permission.permissionName) ? 'checked' : ''}>
+                        <label class="form-check-label" for="permission_${permission.permissionName}">
+                            ${permission.permissionName}
+                        </label>
+                    </div>
+                `).join('');
+
+                const roleModal = new bootstrap.Modal(document.getElementById('roleModal'));
+                roleModal.show();
+            } catch (error) {
+                console.error('Error loading role details:', error);
+                alert('Có lỗi xảy ra khi tải thông tin role');
+            }
+        }
+
+        async function deleteRole(roleName) {
+            if (confirm('Bạn có chắc muốn xóa role này?')) {
+                try {
+                    await axios.delete(`/roles/${roleName}`);
+                    loadRoles();
+                } catch (error) {
+                    console.error('Error deleting role:', error);
+                    alert('Có lỗi xảy ra khi xóa role');
+                }
+            }
+        }
+
+        document.getElementById('saveRoleBtn').addEventListener('click', async () => {
+            const form = document.getElementById('roleForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            try {
+                const roleId = document.getElementById('roleId').value;
+                const selectedPermissions = Array.from(document.querySelectorAll('#permissionCheckboxes input:checked'))
+                    .map(checkbox => checkbox.value);
+
+                const roleData = {
+                    roleName: document.getElementById('roleName').value,
+                    description: document.getElementById('roleDescription').value || '',
+                    permissionSet: selectedPermissions || []
+                };
+
+                if (roleId) {
+                    await axios.put(`/roles/${roleId}`, roleData);
+                } else {
+                    await axios.post('/roles', roleData);
+                }
+
+                const roleModal = bootstrap.Modal.getInstance(document.getElementById('roleModal'));
+                roleModal.hide();
+                loadRoles();
+                form.reset();
+            } catch (error) {
+                console.error('Error saving role:', error);
+                alert('Có lỗi xảy ra khi lưu role');
+            }
+        });
+
+        // Permission Management
+        async function loadPermissions() {
+            try {
+                const response = await axios.get('/permissions');
+                const permissions = response.data.result;
+                const permissionTable = document.getElementById('permissionTable');
+                
+                permissionTable.innerHTML = permissions.map(permission => `
+                    <tr>
+                        <td>${permission.permissionName}</td>
+                        <td>${permission.description || ''}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary edit-permission" data-id="${permission.permissionName}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-permission" data-id="${permission.permissionName}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Add event listeners
+                document.querySelectorAll('.edit-permission').forEach(button => {
+                    button.addEventListener('click', () => editPermission(button.dataset.id));
+                });
+
+                document.querySelectorAll('.delete-permission').forEach(button => {
+                    button.addEventListener('click', () => deletePermission(button.dataset.id));
+                });
+            } catch (error) {
+                console.error('Error loading permissions:', error);
+                alert('Có lỗi xảy ra khi tải danh sách permissions');
+            }
+        }
+
+        async function editPermission(permissionName) {
+            try {
+                const response = await axios.get(`/permissions/${permissionName}`);
+                const permission = response.data.result;
+
+                document.getElementById('permissionId').value = permission.permissionName;
+                document.getElementById('permissionName').value = permission.permissionName;
+                document.getElementById('permissionName').disabled = true;
+                document.getElementById('permissionDescription').value = permission.description || '';
+
+                const permissionModal = new bootstrap.Modal(document.getElementById('permissionModal'));
+                permissionModal.show();
+            } catch (error) {
+                console.error('Error loading permission details:', error);
+                alert('Có lỗi xảy ra khi tải thông tin permission');
+            }
+        }
+
+        async function deletePermission(permissionName) {
+            if (confirm('Bạn có chắc muốn xóa permission này?')) {
+                try {
+                    await axios.delete(`/permissions/${permissionName}`);
+                    loadPermissions();
+                } catch (error) {
+                    console.error('Error deleting permission:', error);
+                    alert('Có lỗi xảy ra khi xóa permission');
+                }
+            }
+        }
+
+        document.getElementById('savePermissionBtn').addEventListener('click', async () => {
+            const form = document.getElementById('permissionForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            try {
+                const permissionId = document.getElementById('permissionId').value;
+                const permissionData = {
+                    permissionName: document.getElementById('permissionName').value,
+                    description: document.getElementById('permissionDescription').value
+                };
+
+                if (permissionId) {
+                    await axios.put(`/permissions/${permissionId}`, permissionData);
+                } else {
+                    await axios.post('/permissions', permissionData);
+                }
+
+                const permissionModal = bootstrap.Modal.getInstance(document.getElementById('permissionModal'));
+                permissionModal.hide();
+                loadPermissions();
+                form.reset();
+            } catch (error) {
+                console.error('Error saving permission:', error);
+                alert('Có lỗi xảy ra khi lưu permission');
+            }
+        });
+
+        // Add new item button handlers
+        document.querySelectorAll('[data-bs-target]').forEach(button => {
+            button.addEventListener('click', async () => {
+                const formId = button.dataset.bsTarget.replace('#', '') + 'Form';
+                const form = document.getElementById(formId);
+                if (form) {
+                    form.reset();
+                    // Reset hidden ID fields
+                    const hiddenIdField = form.querySelector('input[type="hidden"]');
+                    if (hiddenIdField) {
+                        hiddenIdField.value = '';
+                    }
+                    // Reset select fields
+                    const selectFields = form.querySelectorAll('select');
+                    selectFields.forEach(select => {
+                        select.selectedIndex = 0;
+                    });
+                    // Reset checkboxes
+                    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    // Enable all disabled fields when adding new
+                    const disabledFields = form.querySelectorAll('input[disabled]');
+                    disabledFields.forEach(field => {
+                        field.disabled = false;
+                    });
+
+                    // Load data based on form type
+                    if (formId === 'productForm') {
+                        await loadCategoriesForProduct();
+                        await loadSuppliersForProduct();
+                    } else if (formId === 'userForm') {
+                        await loadRolesForUser();
+                    } else if (formId === 'roleForm') {
+                        await loadPermissionsForRole();
+                    }
+                }
+            });
+        });
+
+        // Load roles for user form
+        async function loadRolesForUser() {
+            try {
+                const response = await axios.get('/roles');
+                const roles = response.data.result;
+                const roleCheckboxes = document.getElementById('roleCheckboxes');
+                
+                roleCheckboxes.innerHTML = roles.map(role => `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${role.roleName}" 
+                            id="role_${role.roleName}">
+                        <label class="form-check-label" for="role_${role.roleName}">
+                            ${role.roleName}
+                        </label>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading roles for user form:', error);
+            }
+        }
+
+        // Load permissions for role form
+        async function loadPermissionsForRole() {
+            try {
+                const response = await axios.get('/permissions');
+                const permissions = response.data.result;
+                const permissionCheckboxes = document.getElementById('permissionCheckboxes');
+                
+                permissionCheckboxes.innerHTML = permissions.map(permission => `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${permission.permissionName}" 
+                            id="permission_${permission.permissionName}">
+                        <label class="form-check-label" for="permission_${permission.permissionName}">
+                            ${permission.permissionName}
+                        </label>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading permissions for role form:', error);
+            }
+        }
+
+        // Reset form when modal is hidden
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('hidden.bs.modal', () => {
+                const form = modal.querySelector('form');
+                if (form) {
+                    form.reset();
+                    // Reset hidden ID fields
+                    const hiddenIdField = form.querySelector('input[type="hidden"]');
+                    if (hiddenIdField) {
+                        hiddenIdField.value = '';
+                    }
+                    // Reset select fields
+                    const selectFields = form.querySelectorAll('select');
+                    selectFields.forEach(select => {
+                        select.selectedIndex = 0;
+                    });
+                    // Reset checkboxes
+                    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    // Enable all disabled fields when modal is closed
+                    const disabledFields = form.querySelectorAll('input[disabled]');
+                    disabledFields.forEach(field => {
+                        field.disabled = false;
+                    });
+                }
+            });
+        });
+
+        init();
+    </script>
 </body>
 </html> 

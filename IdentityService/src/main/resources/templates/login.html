@@ -31,6 +31,17 @@
         .form-control {
             padding: 0.75rem;
         }
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .register-link a {
+            color: #0061f2;
+            text-decoration: none;
+        }
+        .register-link a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body class="login-container">
@@ -52,15 +63,67 @@
                             </div>
                             <button type="submit" class="btn btn-primary w-100 mb-3">Đăng nhập</button>
                         </form>
+                        <div class="register-link">
+                            Bạn chưa có tài khoản? <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Đăng ký ngay</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Đăng ký tài khoản</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="registerErrorMessage" class="alert alert-danger" style="display: none;"></div>
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label class="form-label">Tên đăng nhập</label>
+                            <input type="text" class="form-control" id="regUsername" required minlength="5" maxlength="20">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Mật khẩu</label>
+                            <input type="password" class="form-control" id="regPassword" required minlength="8" maxlength="20">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Họ</label>
+                            <input type="text" class="form-control" id="regFirstName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tên</label>
+                            <input type="text" class="form-control" id="regLastName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ngày sinh</label>
+                            <input type="date" class="form-control" id="regBirthDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-control" id="regSdt" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary" id="saveRegisterBtn">Đăng ký</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script th:inline="javascript">
-        // Setup axios interceptors
+        // Create a separate axios instance for registration that doesn't use the token interceptor
+        const registerAxios = axios.create();
+
+        // Setup axios interceptors for authenticated requests
         axios.interceptors.request.use(
             (config) => {
                 const token = localStorage.getItem('token');
@@ -74,9 +137,42 @@
             }
         );
 
+        // Function to show success message
+        function showSuccessMessage(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.className = 'alert alert-success';
+            errorMessage.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Function to show error message
+        function showErrorMessage(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.className = 'alert alert-danger';
+            errorMessage.style.display = 'block';
+        }
+
+        // Function to show register error message
+        function showRegisterErrorMessage(message) {
+            const errorMessage = document.getElementById('registerErrorMessage');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        // Function to hide register error message
+        function hideRegisterErrorMessage() {
+            const errorMessage = document.getElementById('registerErrorMessage');
+            errorMessage.style.display = 'none';
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const errorMessage = document.getElementById('errorMessage');
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
@@ -104,33 +200,86 @@
                             localStorage.setItem('userId', user.id);
                         }
                         
-                        // Step 3: Redirect based on role
-                        const roles = user.roles || [];
-                        if (roles.some(role => role.roleName === 'ADMIN')) {
-                            window.location.href = '/admin';
-                        } else if (roles.some(role => role.roleName === 'STAFF')) {
-                            window.location.href = '/staff';
-                        } else {
-                            window.location.href = '/home';
-                        }
+                        // Step 3: Redirect to home
+                        window.location.href = '/home';
                     } catch (error) {
-                        console.error('Error checking user role:', error);
-                        errorMessage.textContent = 'Có lỗi xảy ra khi kiểm tra quyền truy cập';
-                        errorMessage.style.display = 'block';
+                        console.error('Error checking user info:', error);
+                        showErrorMessage('Có lỗi xảy ra khi kiểm tra thông tin người dùng');
                         localStorage.removeItem('token');
                         localStorage.removeItem('userId');
                     }
                 } else {
-                    errorMessage.textContent = 'Đăng nhập không thành công';
-                    errorMessage.style.display = 'block';
+                    showErrorMessage('Đăng nhập không thành công');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                errorMessage.textContent = error.response?.data?.message || 'Có lỗi xảy ra khi đăng nhập';
-                errorMessage.style.display = 'block';
+                showErrorMessage(error.response?.data?.message || 'Có lỗi xảy ra khi đăng nhập');
                 localStorage.removeItem('token');
                 localStorage.removeItem('userId');
             }
+        });
+
+        // Register form submission
+        document.getElementById('saveRegisterBtn').addEventListener('click', async (e) => {
+            e.preventDefault(); // Prevent form submission and page reload
+            
+            const form = document.getElementById('registerForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            try {
+                const userData = {
+                    username: document.getElementById('regUsername').value,
+                    password: document.getElementById('regPassword').value,
+                    firstName: document.getElementById('regFirstName').value,
+                    lastName: document.getElementById('regLastName').value,
+                    birthDate: document.getElementById('regBirthDate').value,
+                    sdt: document.getElementById('regSdt').value,
+                    roles: ['USER'] // Set default role as USER
+                };
+
+                // Use registerAxios instead of axios for registration
+                const response = await registerAxios.post('/users', userData);
+                
+                if (response.data.result) {
+                    // Close modal and show success message
+                    const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                    registerModal.hide();
+                    form.reset();
+                    
+                    // Show success message
+                    showSuccessMessage('Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.');
+                    
+                    // Pre-fill username in login form
+                    document.getElementById('username').value = userData.username;
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showRegisterErrorMessage(error.response?.data?.message || 'Có lỗi xảy ra khi đăng ký');
+            }
+        });
+
+        // Handle modal events
+        const registerModal = document.getElementById('registerModal');
+        
+        // When modal is opened
+        registerModal.addEventListener('show.bs.modal', () => {
+            hideRegisterErrorMessage();
+        });
+
+        // When modal is closed
+        registerModal.addEventListener('hidden.bs.modal', () => {
+            const form = document.getElementById('registerForm');
+            form.reset();
+            hideRegisterErrorMessage();
+        });
+
+        // Reset error message style when modal is closed
+        document.getElementById('registerModal').addEventListener('hidden.bs.modal', () => {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.style.display = 'none';
         });
     </script>
 </body>

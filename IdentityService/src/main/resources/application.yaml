@@ -11,6 +11,12 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+file:
+  upload-dir: "src/main/resources/static/images"
 jwt:
   signerKey: "fKe+ZH6xJYwTNSr0wrrbPMMWDvJOOKe3CP9CnefTMfGyf4GByGLSgmFwgc/Gr9T1"
   valid-duration: 3600

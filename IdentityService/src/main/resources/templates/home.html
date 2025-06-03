@@ -227,7 +227,8 @@
                         <button class="btn btn-light rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown">
                             <i class="fas fa-user"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
+                        <ul class="dropdown-menu dropdown-menu-end" id="userMenu">
+                            <!-- Role-based menu items will be added here -->
                             <li>
                                 <a class="dropdown-item" href="#" id="viewOrders">
                                     <i class="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi
@@ -372,12 +373,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script th:inline="javascript">
-        // Setup axios interceptor for token
+        // Setup axios interceptors
         axios.interceptors.request.use(
             (config) => {
                 const token = localStorage.getItem('token');
                 if (token) {
                     config.headers.Authorization = `Bearer ${token}`;
+                    console.log('Sending request with token:', token);
+                } else {
+                    console.log('No token found in localStorage');
                 }
                 return config;
             },
@@ -386,13 +390,21 @@
             }
         );
 
-        // Handle unauthorized responses
+        // Add response interceptor to handle 401 errors
         axios.interceptors.response.use(
-            (response) => response,
+            (response) => {
+                console.log('Response headers:', response.headers);
+                return response;
+            },
             (error) => {
+                console.error('Request error:', error);
+                if (error.response) {
+                    console.error('Error response:', error.response.data);
+                    console.error('Error status:', error.response.status);
+                    console.error('Error headers:', error.response.headers);
+                }
                 if (error.response && error.response.status === 401) {
                     localStorage.removeItem('token');
-                    localStorage.removeItem('userId');
                     window.location.href = '/login';
                 }
                 return Promise.reject(error);
@@ -400,6 +412,35 @@
         );
 
         let currentUser = null;
+
+        // Function to verify token and user info
+        async function verifyToken() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.log('No token found, redirecting to login');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                console.log('Verifying token:', token);
+                const response = await axios.get('/users/myInfo');
+                console.log('User info response:', response.data);
+                
+                if (response.data.result) {
+                    const user = response.data.result;
+                    console.log('User roles:', user.roles);
+                    return user;
+                }
+            } catch (error) {
+                console.error('Token verification error:', error);
+                if (error.response) {
+                    console.error('Error response:', error.response.data);
+                }
+                localStorage.removeItem('token');
+                window.location.href = '/login';
+            }
+        }
 
         // Load user info
         async function loadUserInfo() {
@@ -850,29 +891,84 @@
         });
 
         // View orders handler
+       
         document.getElementById('viewOrders').addEventListener('click', (e) => {
-            e.preventDefault();
-            loadOrders();
-            const ordersModal = new bootstrap.Modal(document.getElementById('ordersModal'));
-            ordersModal.show();
-        });
-
-        // Logout handler
-        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
-            e.preventDefault();
-            try {
-                await axios.post('/auth/logout', {
-                    token: localStorage.getItem('token')
+                    e.preventDefault();
+                    loadOrders();
+                    const ordersModal = new bootstrap.Modal(document.getElementById('ordersModal'));
+                    ordersModal.show();
                 });
-            } catch (error) {
-                console.error('Error logging out:', error);
-            } finally {
-                localStorage.removeItem('token');
-                localStorage.removeItem('userId');
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+        });
+        // Function to handle logout
+        function logout() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                axios.post('/auth/logout', { token: token })
+                    .then(() => {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userId');
+                        window.location.href = '/login';
+                    })
+                    .catch(error => {
+                        console.error('Logout error:', error);
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('userId');
+                        window.location.href = '/login';
+                    });
+            } else {
                 window.location.href = '/login';
             }
+        }
+        function adminPage() {
+            const token = localStorage.getItem('token');
+    if (token) {
+        axios.get('/admin', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            responseType: 'text' // ⚠️ quan trọng: để lấy HTML
+        })
+        .then(response => {
+            document.open(); // xóa nội dung cũ
+            document.write(response.data); // ghi lại toàn bộ nội dung mới
+            document.close();
+        })
+        .catch(error => {
+            console.error('Access denied:', error);
+            window.location.href = '/login';
         });
-
+    } else {
+        window.location.href = '/login';
+    }
+        }
+        
+        function staffPage() {
+            const token = localStorage.getItem('token');
+          if (token) {
+                axios.get('/staff', {
+                 headers: {
+                Authorization: `Bearer ${token}`
+            },
+            responseType: 'text' // ⚠️ quan trọng: để lấy HTML
+        })
+        .then(response => {
+            delete window.currentUser; // Xóa biến currentUser
+            document.open(); // xóa nội dung cũ
+            document.write(response.data); // ghi lại toàn bộ nội dung mới
+            document.close();
+        })
+        .catch(error => {
+            console.error('Access denied:', error);
+            window.location.href = '/login';
+        });
+    } else {
+        window.location.href = '/login';
+    }
+        }
         // Search handler
         document.getElementById('searchBtn').addEventListener('click', () => {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -951,12 +1047,84 @@
             productDetailsModal.show();
         }
 
+        // Function to update user menu based on role
+        async function updateUserMenu() {
+            try {
+                const response = await axios.get('/users/myInfo');
+                const user = response.data.result;
+                const menuContainer = document.getElementById('userMenu');
+                
+                // Get current menu items
+                const currentItems = menuContainer.innerHTML;
+                
+                // Check roles
+                const roles = user.roles || [];
+                const hasAdminRole = roles.some(role => role.roleName === 'ADMIN' || role.roleName === 'ROLE_ADMIN');
+                const hasStaffRole = roles.some(role => role.roleName === 'STAFF' || role.roleName === 'ROLE_STAFF');
+
+                // Add role-specific menu items at the top
+                let roleMenuItems = '';
+                if (hasAdminRole) {
+                    roleMenuItems = `
+                        <li><a class="dropdown-item" href="#" id="adminPage"><i class="fas fa-user-shield me-2"></i>Trang quản trị</a></li>
+                        <li><a class="dropdown-item" href="#" id="staffPage"><i class="fas fa-user-tie me-2"></i>Trang nhân viên</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                    `;
+                } else if (hasStaffRole) {
+                    roleMenuItems = `
+                        <li><a class="dropdown-item" href="#" id="staffPage"><i class="fas fa-user-tie me-2"></i>Trang nhân viên</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                    `;
+                }
+
+                // Update menu with role items first, then current items
+                menuContainer.innerHTML = roleMenuItems + currentItems;
+
+                // Add event listeners for all users
+                document.getElementById('viewOrders').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    loadOrders();
+                    const ordersModal = new bootstrap.Modal(document.getElementById('ordersModal'));
+                    ordersModal.show();
+                });
+
+                document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+
+                // Add event listeners for admin/staff if they exist
+                const adminPageBtn = document.getElementById('adminPage');
+                const staffPageBtn = document.getElementById('staffPage');
+
+                if (adminPageBtn) {
+                    adminPageBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        adminPage();
+                    });
+                }
+
+                if (staffPageBtn) {
+                    staffPageBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        staffPage();
+                    });
+                }
+            } catch (error) {
+                console.error('Error updating user menu:', error);
+                if (error.response && error.response.status === 401) {
+                    window.location.href = '/login';
+                }
+            }
+        }
+
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', async () => {
             await loadUserInfo();
             await loadCategories();
             await loadSuppliers();
             await loadProducts();
+            await updateUserMenu();
         });
     </script>
 </body>

@@ -8,6 +8,7 @@ import com.example.IdentityService.entity.TonKho;
 import com.example.IdentityService.service.TonKhoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,12 +25,14 @@ public class TonKhoRestController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ApiResponse<TonKhoResponse> postTonKho(@RequestBody TonKhoRequest request) {
         return ApiResponse.<TonKhoResponse>builder()
         .result(tonKhoService.createTonKho(request))
                 .build();
     }
     @PutMapping("/nhapHang")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ApiResponse<String> nhapHang(@RequestBody NhapHangRequest request) {
         tonKhoService.plusTonKho(request.getMaSp(), request.getSoLuong());
         return ApiResponse.<String>builder()
@@ -64,12 +67,14 @@ public class TonKhoRestController {
                 .build();
     }
     @PutMapping("/{maSP}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<TonKhoResponse> updateTonKho(@PathVariable String maSP, @RequestBody TonKhoRequest request) {
         return ApiResponse.<TonKhoResponse>builder()
                 .result(tonKhoService.updateTonKho(maSP,request))
                 .build();
     }
     @DeleteMapping("/{maSP}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<String> deleteTonKho(@PathVariable String maSP) {
         tonKhoService.deleteTonKho(maSP);
         return ApiResponse.<String>builder()

@@ -1,12 +1,10 @@
 package com.example.IdentityService.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 
 import com.example.IdentityService.dto.request.RoleRequest;
 import com.example.IdentityService.dto.response.RoleResponse;
 import com.example.IdentityService.entity.Role;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
@@ -16,5 +14,6 @@ public interface RoleMapper {
     RoleResponse toRoleResponse(Role role);
 
     @Mapping(target = "permissionSet", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateRole(RoleRequest roleRequest,@MappingTarget Role role);
 }
