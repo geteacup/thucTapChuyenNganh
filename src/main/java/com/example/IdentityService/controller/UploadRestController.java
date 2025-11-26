@@ -2,8 +2,6 @@ package com.example.IdentityService.controller;
 
 import com.example.IdentityService.dto.request.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,19 +9,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/upload")
 @Slf4j
 public class UploadRestController {
-    @Value("${file.upload-dir}")
-    private String uploadDir;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
@@ -44,25 +36,21 @@ public class UploadRestController {
                         .build();
             }
 
-            // Tạo tên file mới để tránh trùng lặp
-            String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String newFilename = "product_" + System.currentTimeMillis() + extension;
-
-            // Tạo thư mục nếu chưa tồn tại
-            File directory = new File(uploadDir);
-            if (!directory.exists()) {
-                directory.mkdirs();
+            // Kiểm tra kích thước file (5MB)
+            if (file.getSize() > 5 * 1024 * 1024) {
+                return ApiResponse.<String>builder()
+                        .result("Kích thước file không được vượt quá 5MB")
+                        .build();
             }
 
-            // Lưu file
-            Path filePath = Paths.get(uploadDir, newFilename);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            // Convert image to byte array and encode to Base64
+            byte[] imageBytes = file.getBytes();
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
 
-            log.info("File uploaded successfully: {}", newFilename);
+            log.info("File uploaded successfully, size: {} bytes", imageBytes.length);
 
             return ApiResponse.<String>builder()
-                    .result(newFilename) // Trả về tên file mới để lưu vào database
+                    .result(base64Image) // Trả về Base64 string để lưu vào database
                     .build();
         } catch (IOException e) {
             log.error("Error uploading file: ", e);

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +41,8 @@
             transition: all 0.3s ease;
         }
 
-        .nav-link:hover, .nav-link.active {
+        .nav-link:hover,
+        .nav-link.active {
             color: white !important;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 0.5rem;
@@ -187,6 +189,7 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
@@ -204,13 +207,15 @@
                         </a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button"
+                            data-bs-toggle="dropdown">
                             <i class="fas fa-th-list me-1"></i>Danh mục
                         </a>
                         <ul class="dropdown-menu" id="categoryList"></ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="supplierDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="supplierDropdown" role="button"
+                            data-bs-toggle="dropdown">
                             <i class="fas fa-truck me-1"></i>Nhà cung cấp
                         </a>
                         <ul class="dropdown-menu" id="supplierList"></ul>
@@ -223,8 +228,9 @@
                             <span class="badge bg-danger cart-badge" id="cartCount">0</span>
                         </button>
                     </div>
-            <div class="dropdown">
-                        <button class="btn btn-light rounded-circle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                    <div class="dropdown">
+                        <button class="btn btn-light rounded-circle" type="button" id="userDropdown"
+                            data-bs-toggle="dropdown">
                             <i class="fas fa-user"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" id="userMenu">
@@ -234,7 +240,9 @@
                                     <i class="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi
                                 </a>
                             </li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li>
                                 <a class="dropdown-item text-danger" href="#" id="logoutBtn">
                                     <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
@@ -242,7 +250,7 @@
                             </li>
                         </ul>
                     </div>
-            </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -353,9 +361,12 @@
                             <div class="mb-4">
                                 <strong>Số lượng mua:</strong>
                                 <div class="input-group mt-2" style="width: 150px;">
-                                    <button class="btn btn-outline-secondary" type="button" id="detailDecreaseQuantity">-</button>
-                                    <input type="number" class="form-control text-center" id="detailQuantity" value="1" min="1">
-                                    <button class="btn btn-outline-secondary" type="button" id="detailIncreaseQuantity">+</button>
+                                    <button class="btn btn-outline-secondary" type="button"
+                                        id="detailDecreaseQuantity">-</button>
+                                    <input type="number" class="form-control text-center" id="detailQuantity" value="1"
+                                        min="1">
+                                    <button class="btn btn-outline-secondary" type="button"
+                                        id="detailIncreaseQuantity">+</button>
                                 </div>
                             </div>
                             <div class="d-grid gap-2">
@@ -426,7 +437,7 @@
                 console.log('Verifying token:', token);
                 const response = await axios.get('/users/myInfo');
                 console.log('User info response:', response.data);
-                
+
                 if (response.data.result) {
                     const user = response.data.result;
                     console.log('User roles:', user.roles);
@@ -454,7 +465,7 @@
                 const response = await axios.get('/users/myInfo');
                 currentUser = response.data.result;
                 console.log('Current user loaded:', currentUser);
-                
+
                 if (currentUser && currentUser.id) {
                     localStorage.setItem('userId', currentUser.id);
                     updateHeaderButtons(true);
@@ -478,7 +489,7 @@
         function updateHeaderButtons(isAuthenticated) {
             const cartButton = document.querySelector('.position-relative');
             const userDropdown = document.querySelector('.dropdown');
-            
+
             if (isAuthenticated) {
                 cartButton.innerHTML = `
                     <button class="btn btn-light rounded-circle" data-bs-toggle="modal" data-bs-target="#cartModal">
@@ -558,7 +569,7 @@
             productList.innerHTML = products.map(product => `
                 <div class="col-md-4 mb-4">
                     <div class="card product-card" data-product='${JSON.stringify(product)}'>
-                        <img src="/images/${product.anhSP}" class="card-img-top" alt="${product.tenSP}">
+                        <img src="data:image/jpeg;base64,${product.anhSP}" class="card-img-top" alt="${product.tenSP}">
                         <div class="card-body">
                             <h5 class="card-title">${product.tenSP}</h5>
                             <p class="card-text">${product.motaSP}</p>
@@ -580,7 +591,7 @@
 
             // Add click handlers for product cards
             document.querySelectorAll('.product-card').forEach(card => {
-                card.addEventListener('click', function(e) {
+                card.addEventListener('click', function (e) {
                     if (!e.target.closest('.add-to-cart')) {
                         const productData = JSON.parse(this.getAttribute('data-product'));
                         showProductDetails(productData);
@@ -630,7 +641,7 @@
                             soLuong: quantity,
                             user: currentUser.id
                         });
-                        
+
                         if (response.data.result) {
                             alert('Đã thêm vào giỏ hàng!');
                             loadCart();
@@ -661,7 +672,7 @@
         // Load cart
         async function loadCart() {
             if (!currentUser) return;
-            
+
             try {
                 const userId = currentUser.id; // Use currentUser instead of localStorage
                 console.log('Loading cart for user:', userId);
@@ -694,7 +705,7 @@
                             <div class="card-body">
                                 <div class="row align-items-center">
                                     <div class="col-md-2">
-                                        <img src="/images/${item.tonKho.anhSP}" class="img-fluid rounded" alt="${item.tonKho.tenSP}">
+                                        <img src="data:image/jpeg;base64,${item.tonKho.anhSP}" class="img-fluid rounded" alt="${item.tonKho.tenSP}">
                                     </div>
                                     <div class="col-md-4">
                                         <h5 class="card-title">${item.tonKho.tenSP}</h5>
@@ -817,16 +828,16 @@
                         try {
                             const detailsResponse = await axios.get(`/hoadon/chitiet/${orderId}`);
                             const details = detailsResponse.data.result;
-                            
+
                             const orderCard = e.target.closest('.card-body');
-                            
+
                             // Check if details exists
                             if (!details) {
                                 console.error('Invalid details data:', details);
                                 alert('Dữ liệu chi tiết đơn hàng không hợp lệ');
                                 return;
                             }
-                            
+
                             // Calculate total
                             const total = details.reduce((sum, detail) => {
                                 if (detail.tonKho && detail.tonKho.giaSP) {
@@ -839,18 +850,18 @@
                                 <div class="mt-3">
                                     <h6>Chi tiết đơn hàng:</h6>
                                     ${details.map(detail => {
-                                        if (!detail.tonKho) {
-                                            console.error('Invalid detail item:', detail);
-                                            return '';
-                                        }
-                                        const itemTotal = detail.tonKho.giaSP * detail.soLuong;
-                                        return `
+                                if (!detail.tonKho) {
+                                    console.error('Invalid detail item:', detail);
+                                    return '';
+                                }
+                                const itemTotal = detail.tonKho.giaSP * detail.soLuong;
+                                return `
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <span>${detail.tonKho.tenSP} x ${detail.soLuong}</span>
                                                 <span>${itemTotal.toLocaleString('vi-VN')} VNĐ</span>
                                             </div>
                                         `;
-                                    }).join('')}
+                            }).join('')}
                                     <div class="border-top pt-2 mt-2">
                                         <strong>Tổng cộng: ${total.toLocaleString('vi-VN')} VNĐ</strong>
                                     </div>
@@ -877,7 +888,7 @@
                     status: 'processing',
                     ngayTao: new Date().toISOString().split('T')[0]
                 });
-                
+
                 if (response.data.result) {
                     alert('Đặt hàng thành công!');
                     loadCart();
@@ -891,13 +902,13 @@
         });
 
         // View orders handler
-       
+
         document.getElementById('viewOrders').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    loadOrders();
-                    const ordersModal = new bootstrap.Modal(document.getElementById('ordersModal'));
-                    ordersModal.show();
-                });
+            e.preventDefault();
+            loadOrders();
+            const ordersModal = new bootstrap.Modal(document.getElementById('ordersModal'));
+            ordersModal.show();
+        });
 
         document.getElementById('logoutBtn').addEventListener('click', (e) => {
             e.preventDefault();
@@ -925,49 +936,49 @@
         }
         function adminPage() {
             const token = localStorage.getItem('token');
-    if (token) {
-        axios.get('/admin', {
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            responseType: 'text' // ⚠️ quan trọng: để lấy HTML
-        })
-        .then(response => {
-            document.open(); // xóa nội dung cũ
-            document.write(response.data); // ghi lại toàn bộ nội dung mới
-            document.close();
-        })
-        .catch(error => {
-            console.error('Access denied:', error);
-            window.location.href = '/login';
-        });
-    } else {
-        window.location.href = '/login';
-    }
+            if (token) {
+                axios.get('/admin', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    responseType: 'text' // ⚠️ quan trọng: để lấy HTML
+                })
+                    .then(response => {
+                        document.open(); // xóa nội dung cũ
+                        document.write(response.data); // ghi lại toàn bộ nội dung mới
+                        document.close();
+                    })
+                    .catch(error => {
+                        console.error('Access denied:', error);
+                        window.location.href = '/login';
+                    });
+            } else {
+                window.location.href = '/login';
+            }
         }
-        
+
         function staffPage() {
             const token = localStorage.getItem('token');
-          if (token) {
+            if (token) {
                 axios.get('/staff', {
-                 headers: {
-                Authorization: `Bearer ${token}`
-            },
-            responseType: 'text' // ⚠️ quan trọng: để lấy HTML
-        })
-        .then(response => {
-            delete window.currentUser; // Xóa biến currentUser
-            document.open(); // xóa nội dung cũ
-            document.write(response.data); // ghi lại toàn bộ nội dung mới
-            document.close();
-        })
-        .catch(error => {
-            console.error('Access denied:', error);
-            window.location.href = '/login';
-        });
-    } else {
-        window.location.href = '/login';
-    }
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    },
+                    responseType: 'text' // ⚠️ quan trọng: để lấy HTML
+                })
+                    .then(response => {
+                        delete window.currentUser; // Xóa biến currentUser
+                        document.open(); // xóa nội dung cũ
+                        document.write(response.data); // ghi lại toàn bộ nội dung mới
+                        document.close();
+                    })
+                    .catch(error => {
+                        console.error('Access denied:', error);
+                        window.location.href = '/login';
+                    });
+            } else {
+                window.location.href = '/login';
+            }
         }
         // Search handler
         document.getElementById('searchBtn').addEventListener('click', () => {
@@ -986,7 +997,7 @@
 
         // Function to show product details
         function showProductDetails(product) {
-            document.getElementById('productDetailImage').src = `/images/${product.anhSP}`;
+            document.getElementById('productDetailImage').src = `data:image/jpeg;base64,${product.anhSP}`;
             document.getElementById('productDetailName').textContent = product.tenSP;
             document.getElementById('productDetailDescription').textContent = product.motaSP;
             document.getElementById('productDetailPrice').textContent = product.giaSP.toLocaleString('vi-VN') + ' VNĐ';
@@ -994,7 +1005,7 @@
             document.getElementById('productDetailQuantity').textContent = product.soLuongSP;
             document.getElementById('productDetailCategory').textContent = product.loaiSanPham.tenLoai;
             document.getElementById('productDetailSupplier').textContent = product.nhaCungCap.tenNCC;
-            
+
             // Set max quantity for detail quantity input
             const detailQuantityInput = document.getElementById('detailQuantity');
             detailQuantityInput.max = product.soLuongSP;
@@ -1030,7 +1041,7 @@
                         soLuong: quantity,
                         user: currentUser.id
                     });
-                    
+
                     if (response.data.result) {
                         alert('Đã thêm vào giỏ hàng!');
                         loadCart();
@@ -1042,7 +1053,7 @@
                     alert(error.response?.data?.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng');
                 }
             };
-            
+
             const productDetailsModal = new bootstrap.Modal(document.getElementById('productDetailsModal'));
             productDetailsModal.show();
         }
@@ -1053,10 +1064,10 @@
                 const response = await axios.get('/users/myInfo');
                 const user = response.data.result;
                 const menuContainer = document.getElementById('userMenu');
-                
+
                 // Get current menu items
                 const currentItems = menuContainer.innerHTML;
-                
+
                 // Check roles
                 const roles = user.roles || [];
                 const hasAdminRole = roles.some(role => role.roleName === 'ADMIN' || role.roleName === 'ROLE_ADMIN');
@@ -1128,4 +1139,5 @@
         });
     </script>
 </body>
+
 </html>

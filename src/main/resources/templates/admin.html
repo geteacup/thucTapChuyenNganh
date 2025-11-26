@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,7 +37,8 @@
             transition: all 0.3s ease;
         }
 
-        .nav-link:hover, .nav-link.active {
+        .nav-link:hover,
+        .nav-link.active {
             color: white !important;
             background: rgba(255, 255, 255, 0.1);
         }
@@ -117,18 +119,21 @@
             color: var(--secondary-color);
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border-radius: 0.5rem;
             padding: 0.75rem 1rem;
             border: 1px solid #d1d3e2;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
         }
     </style>
 </head>
+
 <body>
     <div class="container-fluid">
         <div class="row">
@@ -635,8 +640,8 @@
                 const response = await axios.get('/loaisanpham');
                 const categories = response.data.result;
                 const categorySelect = document.getElementById('loaiSanPham');
-                
-                categorySelect.innerHTML = '<option value="">Chọn loại sản phẩm...</option>' + 
+
+                categorySelect.innerHTML = '<option value="">Chọn loại sản phẩm...</option>' +
                     categories.map(category => `
                         <option value="${category.maLoai}">${category.tenLoai}</option>
                     `).join('');
@@ -651,8 +656,8 @@
                 const response = await axios.get('/nhacungcap');
                 const suppliers = response.data.result;
                 const supplierSelect = document.getElementById('nhaCungCap');
-                
-                supplierSelect.innerHTML = '<option value="">Chọn nhà cung cấp...</option>' + 
+
+                supplierSelect.innerHTML = '<option value="">Chọn nhà cung cấp...</option>' +
                     suppliers.map(supplier => `
                         <option value="${supplier.maNCC}">${supplier.tenNCC}</option>
                     `).join('');
@@ -667,7 +672,7 @@
                 const response = await axios.get('/loaisanpham');
                 const categories = response.data.result;
                 const categoryTable = document.getElementById('categoryTable');
-                
+
                 categoryTable.innerHTML = categories.map(category => `
                     <tr>
                         <td>${category.maLoai}</td>
@@ -766,7 +771,7 @@
                 const response = await axios.get('/nhacungcap');
                 const suppliers = response.data.result;
                 const supplierTable = document.getElementById('supplierTable');
-                
+
                 supplierTable.innerHTML = suppliers.map(supplier => `
                     <tr>
                         <td>${supplier.maNCC}</td>
@@ -865,7 +870,7 @@
                 const response = await axios.get('/tonkho');
                 const products = response.data.result;
                 const productTable = document.getElementById('productTable');
-                
+
                 productTable.innerHTML = products.map(product => `
                     <tr>
                         <td>${product.maSP}</td>
@@ -945,33 +950,26 @@
             try {
                 const productId = document.getElementById('productId').value;
                 const imageFile = document.getElementById('anhSP').files[0];
-                let imageUrl = null;
-
+                let base64Image = null;
                 if (imageFile) {
                     if (!imageFile.type.startsWith('image/')) {
                         throw new Error('File phải là định dạng hình ảnh');
                     }
-                    
+
                     if (imageFile.size > 5 * 1024 * 1024) {
                         throw new Error('Kích thước file không được vượt quá 5MB');
                     }
-
-                    const formData = new FormData();
-                    formData.append('file', imageFile);
-
-                    const uploadResponse = await axios.post('/upload', formData, {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
+                    // Convert image to Base64
+                    base64Image = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            const base64String = reader.result.split(',')[1];
+                            resolve(base64String);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsDataURL(imageFile);
                     });
-
-                    if (!uploadResponse.data.result || uploadResponse.data.result === 'fail') {
-                        throw new Error('Không thể upload hình ảnh');
-                    }
-
-                    imageUrl = uploadResponse.data.result;
                 }
-
                 const productData = {
                     maSP: document.getElementById('maSP').value,
                     tenSP: document.getElementById('tenSP').value,
@@ -982,9 +980,8 @@
                     loaiSanPham: document.getElementById('loaiSanPham').value,
                     nhaCungCap: document.getElementById('nhaCungCap').value
                 };
-
-                if (imageUrl) {
-                    productData.anhSP = imageUrl;
+                if (base64Image) {
+                    productData.anhSP = base64Image;
                 }
 
                 if (productId) {
@@ -1009,7 +1006,7 @@
                 const response = await axios.get('/users');
                 const users = response.data.result;
                 const userTable = document.getElementById('userTable');
-                
+
                 userTable.innerHTML = users.map(user => `
                     <tr>
                         <td>${user.username}</td>
@@ -1060,7 +1057,7 @@
                 const rolesResponse = await axios.get('/roles');
                 const roles = rolesResponse.data.result;
                 const roleCheckboxes = document.getElementById('roleCheckboxes');
-                
+
                 roleCheckboxes.innerHTML = roles.map(role => `
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="${role.roleName}" 
@@ -1140,7 +1137,7 @@
                 const response = await axios.get('/roles');
                 const roles = response.data.result;
                 const roleTable = document.getElementById('roleTable');
-                
+
                 roleTable.innerHTML = roles.map(role => `
                     <tr>
                         <td>${role.roleName}</td>
@@ -1185,7 +1182,7 @@
                 const permissionsResponse = await axios.get('/permissions');
                 const permissions = permissionsResponse.data.result;
                 const permissionCheckboxes = document.getElementById('permissionCheckboxes');
-                
+
                 permissionCheckboxes.innerHTML = permissions.map(permission => `
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="${permission.permissionName}" 
@@ -1257,7 +1254,7 @@
                 const response = await axios.get('/permissions');
                 const permissions = response.data.result;
                 const permissionTable = document.getElementById('permissionTable');
-                
+
                 permissionTable.innerHTML = permissions.map(permission => `
                     <tr>
                         <td>${permission.permissionName}</td>
@@ -1394,7 +1391,7 @@
                 const response = await axios.get('/roles');
                 const roles = response.data.result;
                 const roleCheckboxes = document.getElementById('roleCheckboxes');
-                
+
                 roleCheckboxes.innerHTML = roles.map(role => `
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="${role.roleName}" 
@@ -1415,7 +1412,7 @@
                 const response = await axios.get('/permissions');
                 const permissions = response.data.result;
                 const permissionCheckboxes = document.getElementById('permissionCheckboxes');
-                
+
                 permissionCheckboxes.innerHTML = permissions.map(permission => `
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="${permission.permissionName}" 
@@ -1463,4 +1460,5 @@
         init();
     </script>
 </body>
-</html> 
+
+</html>

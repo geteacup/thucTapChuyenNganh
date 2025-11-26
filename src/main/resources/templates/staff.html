@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,7 +42,8 @@
             transition: all 0.3s ease;
         }
 
-        .nav-link:hover, .nav-link.active {
+        .nav-link:hover,
+        .nav-link.active {
             color: white !important;
             background: rgba(255, 255, 255, 0.1);
         }
@@ -172,6 +174,7 @@
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
@@ -204,7 +207,8 @@
                         </a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="inventoryDropdown" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="inventoryDropdown" role="button"
+                            data-bs-toggle="dropdown">
                             <i class="fas fa-boxes"></i>Nhập hàng
                         </a>
                         <ul class="dropdown-menu">
@@ -425,7 +429,7 @@
                 console.log('API Response:', response.data);
                 const orders = response.data.result;
                 console.log('Orders to display:', orders);
-                
+
                 if (!orders || orders.length === 0) {
                     console.log('No orders found');
                     document.getElementById('ordersList').innerHTML = '<div class="col-12 text-center"><p>Không có đơn hàng nào</p></div>';
@@ -634,21 +638,21 @@
                 const response = await axios.get('/tonkho');
                 const products = response.data.result;
                 console.log('Loaded products:', products);
-                
-                const productOptions = products.map(product => 
+
+                const productOptions = products.map(product =>
                     `<option value="${product.maSP}">${product.tenSP} - ${product.giaSP} VNĐ</option>`
                 ).join('');
-                
+
                 const defaultOption = '<option value="">Chọn sản phẩm...</option>';
                 const allOptions = defaultOption + productOptions;
-                
+
                 // Only update empty selects or the new select
                 document.querySelectorAll('.product-select').forEach(select => {
                     if (!select.value) {
                         select.innerHTML = allOptions;
                     }
                 });
-                
+
                 return allOptions;
             } catch (error) {
                 console.error('Error loading products:', error);
@@ -720,7 +724,7 @@
             `;
             document.getElementById('importItemsList').insertAdjacentHTML('beforeend', itemHtml);
             importItems.push(itemId);
-            
+
             // Load products only for the new select
             const newSelect = document.querySelector(`.import-item[data-id="${itemId}"] .product-select`);
             loadProducts().then(options => {
@@ -733,13 +737,13 @@
             // Clear previous items
             document.getElementById('importItemsList').innerHTML = '';
             importItems = [];
-            
+
             // Load products first
             await loadProducts();
-            
+
             // Add first item
             addImportItem();
-            
+
             // Show modal
             importInventoryModal.show();
         });
@@ -828,43 +832,36 @@
             loadCategoriesAndSuppliers();
             createProductModal.show();
         });
-
         document.getElementById('submitCreateProductBtn').addEventListener('click', async () => {
             const form = document.getElementById('createProductForm');
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
-
             try {
                 const imageFile = document.getElementById('anhSP').files[0];
                 if (!imageFile) {
                     throw new Error('Vui lòng chọn hình ảnh sản phẩm');
                 }
-
                 // Kiểm tra định dạng file
                 if (!imageFile.type.startsWith('image/')) {
                     throw new Error('File phải là định dạng hình ảnh');
                 }
-                
-                // Kiểm tra kích thước file (giới hạn 5MB)
+
+                // Kiểm tra kích thước file (5MB)
                 if (imageFile.size > 5 * 1024 * 1024) {
                     throw new Error('Kích thước file không được vượt quá 5MB');
                 }
-
-                // Upload file lên server
-                const formData = new FormData();
-                formData.append('file', imageFile);
-
-                const uploadResponse = await axios.post('/upload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
+                // Convert image to Base64
+                const base64Image = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const base64String = reader.result.split(',')[1];
+                        resolve(base64String);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(imageFile);
                 });
-
-                if (!uploadResponse.data.result || uploadResponse.data.result === 'fail') {
-                    alert('Tạo sản phẩm thất bại!');                }
-
                 // Tạo object chứa dữ liệu sản phẩm
                 const productData = {
                     maSP: document.getElementById('maSP').value,
@@ -875,25 +872,17 @@
                     rongSP: parseFloat(document.getElementById('rongSP').value),
                     loaiSanPham: document.getElementById('loaiSanPham').value,
                     nhaCungCap: document.getElementById('nhaCungCap').value,
-                    anhSP: uploadResponse.data.result // Tên file từ response
+                    anhSP: base64Image // Send Base64 directly
                 };
-                
-                console.log('Sending product data:', productData);
 
-                const response = await axios.post('/tonkho', productData, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }
-                });
-
+                const response = await axios.post('/tonkho', productData);
                 createProductModal.hide();
                 alert('Tạo sản phẩm thành công!');
                 form.reset();
             } catch (error) {
                 console.error('Error creating product:', error);
-                let errorMessage = 'Có lỗi xảy ra khi tạo sản phẩm:\n\n';
-                
+                alert(error.message || 'Có lỗi xảy ra khi tạo sản phẩm');
+
                 if (error.response) {
                     errorMessage += `Status: ${error.response.status}\n`;
                     if (error.response.data && error.response.data.message) {
@@ -936,4 +925,5 @@
         init();
     </script>
 </body>
-</html> 
+
+</html>
